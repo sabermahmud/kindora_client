@@ -1,47 +1,356 @@
-"use client"
-import Image from "next/image"
-import { FormEvent } from "react"
 
-export interface SignupPageProps {
-    prop: string
-}
+"use client";
 
-export default function SignupPage({ prop }: SignupPageProps) {
-    const handleSignup = ({e}:FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const form = e.target;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData)
-        console.log(data)
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { type ChangeEvent, type FormEvent, useState } from "react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Camera,
+  Heart,
+  LockKeyhole,
+  Mail,
+  UserRound,
+} from "lucide-react";
+
+import { signUp } from "@/lib/auth-client";
+
+export default function SignupPage() {
+  const router = useRouter();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
     }
-    return <>
-    <div className="flex w-full justify-center mx-auto items-center my-20 container">
-        <div className="w-full mx-auto text-center p-10 bg-green-50">
-            <h1 className="text-green-800 text-4xl font-extrabold">Welcome to Sign up</h1>
-            {/* form */}
-            <form onSubmit={handleSignup} className="flex flex-col items-start bg-green-500/50 rounded-2xl p-6">
-                {/* profile pic */}
-                <input type="file" name="image" placeholder="set your profile pic" className="bg-green-50 h-40 w-40 rounded-full text-center mx-auto"/>
-                {/* name */}
-                <label htmlFor="name" className="mt-4">Your Name</label>
-                <input type="text" name="name" placeholder="Write hare you full name" className="bg-green-50 w-full p-2"/>
-                {/* email */}
-                <label htmlFor="email" className="mt-4">Your Email</label>
-                <input type="email" name="email" placeholder="exp: john@example.com" className="bg-green-50 w-full p-2"/>
-                
-                {/* password */}
-                <label htmlFor="password" className="mt-4">Create a password</label>
-                <input type="password" name="password" placeholder="type your password" className="bg-green-50 w-full p-2"/>
-                {/* re-type password */}
-                <label htmlFor="confirm_password" className="mt-4">confirm your password</label>
-                <input type="password" name="confirm_password" placeholder="re-type your password"  className="bg-green-50 w-full p-2"/>
-                <button type="submit" className="bg-green-800 text-green-50 px-6 py-2 w-2/3 mx-auto mt-10 rounded-lg text-center ">Sing up</button>
+  };
+
+  // Upload image to Cloudinary
+  const uploadImageToCloudinary = async (file: File): Promise<string> => {
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      // Cloudinary not configured — skip image upload gracefully
+      return "";
+    }
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      console.error("Cloudinary Error:", data);
+      throw new Error(data.error?.message || "Image upload failed");
+    }
+
+    return data.secure_url;
+  };
+
+  // Signup handler with better-auth
+  const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+
+      const name = formData.get("name") as string;
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirm_password") as string;
+      const imageFile = formData.get("image");
+
+      // Validate password confirmation
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        setIsLoading(false);
+        return;
+      }
+
+      let imageUrl = "";
+
+      if (imageFile instanceof File && imageFile.size > 0) {
+        try {
+          imageUrl = await uploadImageToCloudinary(imageFile);
+        } catch (imgError) {
+          console.warn("Image upload skipped:", imgError);
+        }
+      }
+
+      const { data, error: signupError } = await signUp({
+        email,
+        password,
+        name,
+        image: imageUrl || undefined,
+      });
+
+      if (signupError) {
+        setError(signupError.message || "Signup failed. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (data?.user) {
+        router.push("/");
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-[#FAF9F5] px-4 py-12 sm:px-6 lg:py-20">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        {/* Signup Form */}
+        <section className="mx-auto w-full max-w-lg">
+          <div className="mb-8 text-center lg:text-left">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#E8F0E8] px-4 py-2 text-sm font-semibold text-[#245C45]">
+              <Heart size={16} />
+              Join the Kindora community
+            </div>
+
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#202B25] sm:text-4xl lg:text-5xl">
+              Create your <span className="text-[#245C45]">account</span>
+            </h1>
+
+            <p className="mt-3 text-sm leading-6 text-[#78847B] sm:text-base">
+              Be part of something meaningful. Start making a difference in
+              your community today.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-[#E8EDE7] bg-white p-5 shadow-[0_15px_50px_rgba(36,92,69,0.07)] sm:p-8">
+            <form onSubmit={handleSignup} className="flex flex-col gap-5">
+              {/* Profile Picture */}
+              <div className="flex flex-col items-center gap-3 pb-2">
+                <label
+                  htmlFor="image"
+                  className="group relative flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-[#B8CDBB] bg-[#E8F0E8] transition hover:border-[#245C45] hover:bg-[#DFEADF]"
+                >
+                  {imagePreview ? (
+                    <Image
+                      src={imagePreview}
+                      alt="Profile preview"
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center text-[#245C45]">
+                      <Camera size={26} />
+                      <span className="mt-1 text-[10px] font-semibold">
+                        Upload
+                      </span>
+                    </div>
+                  )}
+
+                  <input
+                    id="image"
+                    type="file"
+                    name="image"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="absolute inset-0 cursor-pointer opacity-0"
+                    onChange={handleImageChange}
+                  />
+                </label>
+
+                <div className="text-center">
+                  <p className="text-sm font-bold text-[#202B25]">
+                    Profile Picture
+                  </p>
+                  <p className="text-xs text-[#78847B]">
+                    Choose a photo (optional)
+                  </p>
+                </div>
+              </div>
+
+              {/* Name */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="name"
+                  className="text-sm font-bold text-[#202B25]"
+                >
+                  Your Name
+                </label>
+
+                <div className="relative">
+                  <UserRound
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#78847B]"
+                  />
+
+                  <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    required
+                    placeholder="Enter your full name"
+                    className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-bold text-[#202B25]"
+                >
+                  Email Address
+                </label>
+
+                <div className="relative">
+                  <Mail
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#78847B]"
+                  />
+
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="you@example.com"
+                    className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-bold text-[#202B25]"
+                >
+                  Create Password
+                </label>
+
+                <div className="relative">
+                  <LockKeyhole
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#78847B]"
+                  />
+
+                  <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    required
+                    minLength={6}
+                    placeholder="Create a password"
+                    className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
+                  />
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirm_password"
+                  className="text-sm font-bold text-[#202B25]"
+                >
+                  Confirm Password
+                </label>
+
+                <div className="relative">
+                  <LockKeyhole
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#78847B]"
+                  />
+
+                  <input
+                    id="confirm_password"
+                    type="password"
+                    name="confirm_password"
+                    required
+                    minLength={6}
+                    placeholder="Re-enter your password"
+                    className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
+                  />
+                </div>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                className="group mt-3 flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#245C45] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#245C45]/15 transition duration-300 hover:-translate-y-0.5 hover:bg-[#194833] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#245C45]/20"
+              >
+                Create Account
+                <ArrowRight
+                  size={18}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </button>
             </form>
 
-        </div>
-        <div className="w-full">
-            <Image src={"/signup_img/signup.png"} alt="sign up img" width={600} height={600}/>
-        </div>
-    </div>
-    </>
+            <p className="mt-6 text-center text-sm text-[#78847B]">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-bold text-[#245C45] transition hover:text-[#E8A45B]"
+              >
+                Log in
+              </Link>
+            </p>
+          </div>
+
+          <p className="mt-6 text-center text-xs text-[#9AA39B]">
+            By joining Kindora, you become part of a community that cares.
+          </p>
+        </section>
+
+        {/* Illustration */}
+        <section className="relative hidden lg:flex lg:flex-col lg:items-center">
+          <div className="relative w-full max-w-130">
+            <div className="absolute -right-5 -top-5 h-28 w-28 rounded-full bg-[#E8A45B]/15 blur-2xl" />
+            <div className="absolute -bottom-5 -left-5 h-36 w-36 rounded-full bg-[#245C45]/10 blur-2xl" />
+
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-[#E8F0E8] p-6">
+              <Image
+                src="/signup_img/signup.png"
+                alt="People working together to make a positive impact"
+                width={600}
+                height={600}
+                priority
+                className="h-auto w-full object-contain"
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 max-w-md text-center">
+            <h2 className="text-3xl font-extrabold text-[#245C45]">
+              Small Actions.
+              <br />
+              Greater Impact.
+            </h2>
+
+            <p className="mt-3 text-base leading-7 text-[#78847B]">
+              Every small act of kindness can create a meaningful change.
+              Connect, volunteer, and grow together with Kindora.
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
 }
