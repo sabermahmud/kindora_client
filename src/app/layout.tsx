@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${nunitoSans.variable} h-full antialiased`}>
+    <html lang="en" className={`${nunitoSans.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <header>
           <NavbarPage/>
