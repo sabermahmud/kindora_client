@@ -96,13 +96,15 @@ export default function Navbar() {
           {session?.user ? (
             <div className="flex gap-4 items-center">
               <div>
-                <Image
-                  src={session.user.image}
-                  alt={"user_image"}
-                  width={40}
-                  height={40}
-                  className="rounded-full object-cover border border-green-950"
-                />
+                {session.user.image && (
+                  <Image
+                    src={session.user.image}
+                    alt={"user_image"}
+                    width={40}
+                    height={40}
+                    className="rounded-full object-cover border border-green-950"
+                  />
+                )}
               </div>
               <button
                 onClick={handleLogout}

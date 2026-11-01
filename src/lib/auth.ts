@@ -10,6 +10,7 @@ if (!MONGODB_URI) {
 }
 
 const client = new MongoClient(MONGODB_URI);
+await client.connect();
 const db = client.db();
 
 export const auth = betterAuth({
