@@ -102,7 +102,7 @@ export default function Navbar() {
                     alt={"user_image"}
                     width={40}
                     height={40}
-                    className="rounded-full object-cover border border-green-950"
+                    className="h-10 w-10 shrink-0 rounded-full border border-green-950 object-cover"
                   />
                 )}
               </div>
