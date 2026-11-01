@@ -29,7 +29,7 @@ const AUTO_PLAY_INTERVAL = 5000;
 
 const slides: Slide[] = [
   {
-    image: "/banner_imgs/banner-1.jpeg",
+    image: "/banner_imgs/ban-1.jpeg",
     kicker: "Give Hope For Homeless",
     heading: "Helping Each Other Can Make World Better",
     description:
@@ -40,7 +40,7 @@ const slides: Slide[] = [
     button2Href: "/upcoming-events",
   },
   {
-    image: "/banner_imgs/banner-2.jpeg",
+    image: "/banner_imgs/ban-2.jpeg",
     kicker: "Small Actions. Greater Impact.",
     heading: "Join Hands With Local Organizations",
     description:
@@ -51,7 +51,7 @@ const slides: Slide[] = [
     button2Href: "/categories",
   },
   {
-    image: "/banner_imgs/banner-3.jpeg",
+    image: "/banner_imgs/ban-3.jpeg",
     kicker: "Build a Better Community",
     heading: "Find Meaningful Ways to Contribute",
     description:
@@ -120,7 +120,7 @@ export default function Banner() {
               />
 
               {/* Image Overlay */}
-              <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/60 to-black/90 blur-xl" />
+              <div className="absolute inset-0 bg-linear-to-t from-black via-black/70 to-black" />
 
               {/* Content */}
               <div className="absolute inset-0 z-10 flex flex-col justify-center items-center p-6 sm:p-10 md:p-16">
@@ -164,9 +164,7 @@ export default function Banner() {
           ))}
         </CarouselContent>
 
-        {/* Navigation */}
-        <CarouselPrevious className="left-4 border-white/30 bg-black/30 text-white hover:bg-black/60 hover:text-white" />
-        <CarouselNext className="right-4 border-white/30 bg-black/30 text-white hover:bg-black/60 hover:text-white" />
+        
       </Carousel>
 
       {/* Pagination Dots */}

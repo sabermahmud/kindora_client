@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { signUp } from "@/lib/auth-client";
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -63,44 +64,6 @@ export default function SignupPage() {
     setImagePreview(URL.createObjectURL(file));
   };
 
-  // Upload image to Cloudinary
-  const uploadImageToCloudinary = async (file: File): Promise<string> => {
-    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-    if (!cloudName || !uploadPreset) {
-      throw new Error(
-        "Cloudinary configuration is missing. Please check your environment variables.",
-      );
-    }
-
-    const formData = new FormData();
-
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
-
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Cloudinary Error:", data);
-
-      throw new Error(data.error?.message || "Image upload failed.");
-    }
-
-    if (!data.secure_url) {
-      throw new Error("Cloudinary did not return an image URL.");
-    }
-
-    return data.secure_url;
-  };
 
   // Handle signup
   const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
