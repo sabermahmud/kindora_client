@@ -1,9 +1,8 @@
-
 "use client";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -18,26 +17,61 @@ import { signUp } from "@/lib/auth-client";
 
 export default function SignupPage() {
   const router = useRouter();
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Clean up image preview URL
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
+  // Handle image preview
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
+    setError(null);
+
+    if (!file) {
+      setImagePreview(null);
+      return;
     }
+
+    // Validate image type
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Please select a JPG, PNG, or WEBP image.");
+      e.target.value = "";
+      setImagePreview(null);
+      return;
+    }
+
+    // Validate image size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Image size must be less than 2MB.");
+      e.target.value = "";
+      setImagePreview(null);
+      return;
+    }
+
+    setImagePreview(URL.createObjectURL(file));
   };
 
   // Upload image to Cloudinary
   const uploadImageToCloudinary = async (file: File): Promise<string> => {
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
     if (!cloudName || !uploadPreset) {
-      // Cloudinary not configured — skip image upload gracefully
-      return "";
+      throw new Error(
+        "Cloudinary configuration is missing. Please check your environment variables.",
+      );
     }
 
     const formData = new FormData();
@@ -45,74 +79,88 @@ export default function SignupPage() {
     formData.append("file", file);
     formData.append("upload_preset", uploadPreset);
 
-    const res = await fetch(
+    const response = await fetch(
       `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       {
         method: "POST",
         body: formData,
-      }
+      },
     );
 
-    const data = await res.json();
+    const data = await response.json();
 
-    if (!res.ok) {
+    if (!response.ok) {
       console.error("Cloudinary Error:", data);
-      throw new Error(data.error?.message || "Image upload failed");
+
+      throw new Error(data.error?.message || "Image upload failed.");
+    }
+
+    if (!data.secure_url) {
+      throw new Error("Cloudinary did not return an image URL.");
     }
 
     return data.secure_url;
   };
 
-  // Signup handler with better-auth
+  // Handle signup
   const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
+
+    if (isLoading) return;
+
     setIsLoading(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+
+    const name = (formData.get("name") as string).trim();
+    const email = (formData.get("email") as string).trim();
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirm_password") as string;
+    const imageFile = formData.get("image");
 
     try {
-      const formData = new FormData(e.currentTarget);
-
-      const name = formData.get("name") as string;
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
-      const confirmPassword = formData.get("confirm_password") as string;
-      const imageFile = formData.get("image");
-
-      // Validate password confirmation
+      // Validate password
       if (password !== confirmPassword) {
-        setError("Passwords do not match.");
-        setIsLoading(false);
-        return;
+        throw new Error("Passwords do not match.");
       }
 
-      let imageUrl = "";
+      if (password.length < 6) {
+        throw new Error("Password must be at least 6 characters long.");
+      }
+
+      // Upload profile image
+      let imageUrl: string | undefined;
 
       if (imageFile instanceof File && imageFile.size > 0) {
-        try {
-          imageUrl = await uploadImageToCloudinary(imageFile);
-        } catch (imgError) {
-          console.warn("Image upload skipped:", imgError);
-        }
+        imageUrl = await uploadImageToCloudinary(imageFile);
       }
 
-      const { data, error: signupError } = await signUp({
+      // Create user with Better Auth
+      const { data, error: signupError } = await signUp.email({
+        name,
         email,
         password,
-        name,
-        image: imageUrl || undefined,
+        image: imageUrl,
+        callbackURL: "/",
       });
 
       if (signupError) {
-        setError(signupError.message || "Signup failed. Please try again.");
-        setIsLoading(false);
-        return;
+        throw new Error(signupError.message || "Account creation failed.");
       }
 
-      if (data?.user) {
-        router.push("/");
-      }
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "Something went wrong.");
+      console.log("Signup successful:", data);
+
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      console.error("Signup Error:", err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -134,8 +182,8 @@ export default function SignupPage() {
             </h1>
 
             <p className="mt-3 text-sm leading-6 text-[#78847B] sm:text-base">
-              Be part of something meaningful. Start making a difference in
-              your community today.
+              Be part of something meaningful. Start making a difference in your
+              community today.
             </p>
           </div>
 
@@ -171,6 +219,7 @@ export default function SignupPage() {
                     accept="image/jpeg,image/png,image/webp"
                     className="absolute inset-0 cursor-pointer opacity-0"
                     onChange={handleImageChange}
+                    disabled={isLoading}
                   />
                 </label>
 
@@ -179,7 +228,7 @@ export default function SignupPage() {
                     Profile Picture
                   </p>
                   <p className="text-xs text-[#78847B]">
-                    Choose a photo (optional)
+                    Choose a photo (optional, max 2MB)
                   </p>
                 </div>
               </div>
@@ -204,6 +253,7 @@ export default function SignupPage() {
                     type="text"
                     name="name"
                     required
+                    disabled={isLoading}
                     placeholder="Enter your full name"
                     className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
                   />
@@ -230,6 +280,7 @@ export default function SignupPage() {
                     type="email"
                     name="email"
                     required
+                    disabled={isLoading}
                     placeholder="you@example.com"
                     className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
                   />
@@ -257,6 +308,7 @@ export default function SignupPage() {
                     name="password"
                     required
                     minLength={6}
+                    disabled={isLoading}
                     placeholder="Create a password"
                     className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
                   />
@@ -284,22 +336,37 @@ export default function SignupPage() {
                     name="confirm_password"
                     required
                     minLength={6}
+                    disabled={isLoading}
                     placeholder="Re-enter your password"
                     className="h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition placeholder:text-[#A1AAA2] focus:border-[#245C45] focus:ring-4 focus:ring-[#245C45]/10"
                   />
                 </div>
               </div>
 
+              {/* Error Message */}
+              {error && (
+                <div
+                  role="alert"
+                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+                >
+                  {error}
+                </div>
+              )}
+
               {/* Submit */}
               <button
                 type="submit"
-                className="group mt-3 flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#245C45] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#245C45]/15 transition duration-300 hover:-translate-y-0.5 hover:bg-[#194833] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#245C45]/20"
+                disabled={isLoading}
+                className="group mt-3 flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#245C45] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-[#245C45]/15 transition duration-300 hover:-translate-y-0.5 hover:bg-[#194833] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-[#245C45]/20 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Create Account
-                <ArrowRight
-                  size={18}
-                  className="transition-transform group-hover:translate-x-1"
-                />
+                {isLoading ? "Creating Account..." : "Create Account"}
+
+                {!isLoading && (
+                  <ArrowRight
+                    size={18}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
+                )}
               </button>
             </form>
 

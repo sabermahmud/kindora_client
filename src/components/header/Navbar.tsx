@@ -23,6 +23,7 @@ const navigation = [
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  console.log(session);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -32,6 +33,13 @@ export default function Navbar() {
     session?.user?.name ?? session?.user?.email?.split("@")[0] ?? "Account";
 
   const handleLogout = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          // router.push("/login"); // redirect to login page
+        },
+      },
+    });
     await signOut();
     setMobileMenuOpen(false);
   };
@@ -84,18 +92,37 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Actions */}
-          <div>
-            <div></div>
-            <div>
-              
+        <div>
+          {session?.user ? (
+            <div className="flex gap-4 items-center">
+              <div>
+                <Image
+                  src={session.user.image}
+                  alt={"user_image"}
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover border border-green-950"
+                />
+              </div>
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-6 py-2"
+              >
+                log Out
+              </button>
             </div>
+          ) : (
             <div className="flex gap-4">
-              <button className="bg-amber-400 px-6 py-2">login</button>
+              <Link href={"/login"}>
+                <button className="bg-amber-400 px-6 py-2">login</button>
+              </Link>
               <Link href={"/signup"}>
-              <button className="bg-amber-400 px-6 py-2">Sign up</button>
+                <button className="bg-amber-400 px-6 py-2">Sign up</button>
               </Link>
             </div>
-          </div>
+          )}
+          <div></div>
+        </div>
 
         {/* Mobile Menu Toggle */}
         <button
