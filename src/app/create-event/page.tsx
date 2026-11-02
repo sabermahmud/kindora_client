@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { authClient } from "@/lib/auth-client";
 
 export default function CreateEventPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -122,12 +123,14 @@ export default function CreateEventPage() {
           ? Number(formData.get("registrationLimit"))
           : null,
       };
-
+      const {data, error} = await authClient.token();
+      const token = data?.token;
       // Send event data to Express server
       const response = await fetch(`${process.env.SERVER_URL}/create-event`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          authorization: `Bearer ${token}`
         },
         body: JSON.stringify(eventData),
       });

@@ -61,7 +61,7 @@ export default async function UpcomingEventsPage() {
   });
 
   // Fetch events with JWT
-  const eventsData = await getUpcomingEvents(tokenResponse.token);
+  const eventsData = await getUpcomingEvents(tokenResponse?.token);
 
   return (
     <main className="min-h-screen bg-slate-50">
