@@ -1,6 +1,8 @@
+
 import EventDetails from "@/components/EventDetails";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
@@ -19,7 +21,7 @@ interface Event {
 }
 
 // Fetch upcoming events
-async function getUpcomingEvents(): Promise<Event[]> {
+async function getUpcomingEvents(token: string): Promise<Event[]> {
   const serverUrl = process.env.SERVER_URL;
 
   if (!serverUrl) {
@@ -27,11 +29,17 @@ async function getUpcomingEvents(): Promise<Event[]> {
   }
 
   const res = await fetch(`${serverUrl}/upcoming-events`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     cache: "no-store",
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch upcoming events. Status: ${res.status}`);
+    throw new Error(
+      `Failed to fetch upcoming events. Status: ${res.status}`,
+    );
   }
 
   const data: unknown = await res.json();
@@ -44,11 +52,21 @@ async function getUpcomingEvents(): Promise<Event[]> {
 }
 
 export default async function UpcomingEventsPage() {
-  const eventsData = await getUpcomingEvents();
+  // Get request headers
+  const requestHeaders = await headers();
+
+  // Generate JWT token
+  const tokenResponse = await auth.api.getToken({
+    headers: requestHeaders,
+  });
+
+  // Fetch events with JWT
+  const eventsData = await getUpcomingEvents(tokenResponse.token);
 
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+
         {/* Header */}
         <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
@@ -117,6 +135,7 @@ export default async function UpcomingEventsPage() {
 
                   {/* Event Information */}
                   <div className="mt-5 space-y-3 border-t border-slate-100 pt-4">
+
                     {/* Event Date */}
                     <div className="flex items-center gap-3 text-sm text-slate-600">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -212,7 +231,6 @@ export default async function UpcomingEventsPage() {
                   </div>
 
                   {/* Action */}
-
                   <EventDetails event={event} />
                 </div>
               </article>

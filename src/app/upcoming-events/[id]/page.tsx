@@ -79,7 +79,7 @@ export default async function Page({ params }: PageProps) {
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         {/* Back Navigation */}
         <Link
-          href="/events"
+          href="/upcoming-events"
           className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-emerald-600"
         >
           <ArrowLeft size={18} />
