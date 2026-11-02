@@ -221,11 +221,11 @@ export default function LogPage() {
                 {isLoading ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Signing in...
+                    Loging in...
                   </>
                 ) : (
                   <>
-                    Sign In
+                    Log In
                     <ArrowRight
                       size={18}
                       className="transition-transform duration-200 group-hover:translate-x-1"
@@ -302,7 +302,7 @@ export default function LogPage() {
 
         {/* Illustration */}
         <section className="relative hidden flex-col items-center lg:flex">
-          <div className="relative w-full max-w-[520px]">
+          <div className="relative w-full max-w-130">
 
             {/* Decorative Background */}
             <div className="absolute -right-5 -top-5 h-28 w-28 rounded-full bg-[#E8A45B]/15 blur-2xl" />

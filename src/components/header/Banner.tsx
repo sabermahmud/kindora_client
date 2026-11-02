@@ -51,7 +51,7 @@ const slides: Slide[] = [
     button2Href: "/categories",
   },
   {
-    image: "/banner_imgs/ban-3.jpeg",
+    image: "/banner_imgs/banr-3.jpeg",
     kicker: "Build a Better Community",
     heading: "Find Meaningful Ways to Contribute",
     description:
