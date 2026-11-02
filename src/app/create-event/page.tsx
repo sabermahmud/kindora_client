@@ -124,7 +124,7 @@ export default function CreateEventPage() {
       };
 
       // Send event data to Express server
-      const response = await fetch("http://localhost:5000/create-event", {
+      const response = await fetch(`${process.env.SERVER_URL}/create-event`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
