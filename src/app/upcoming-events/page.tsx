@@ -1,6 +1,7 @@
 
 import EventDetails from "@/components/EventDetails";
 import { auth } from "@/lib/auth";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 import { headers } from "next/headers";
 import Image from "next/image";
 
@@ -22,7 +23,7 @@ interface Event {
 
 // Fetch upcoming events
 async function getUpcomingEvents(token: string): Promise<Event[]> {
-  const serverUrl = process.env.SERVER_URL;
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   if (!serverUrl) {
     throw new Error("SERVER_URL environment variable is missing");
@@ -53,15 +54,10 @@ async function getUpcomingEvents(token: string): Promise<Event[]> {
 
 export default async function UpcomingEventsPage() {
   // Get request headers
-  const requestHeaders = await headers();
-
-  // Generate JWT token
-  const tokenResponse = await auth.api.getToken({
-    headers: requestHeaders,
-  });
+  const token = await getTokenFromServer()
 
   // Fetch events with JWT
-  const eventsData = await getUpcomingEvents(tokenResponse?.token);
+  const eventsData = await getUpcomingEvents(token);
 
   return (
     <main className="min-h-screen bg-slate-50">

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
-import { authClient } from "@/lib/auth-client";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 export default function CreateEventPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -18,6 +18,9 @@ export default function CreateEventPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // API URL
+  const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   // Cleanup image preview URL
   useEffect(() => {
@@ -75,9 +78,17 @@ export default function CreateEventPage() {
     setError(null);
     setSuccess(null);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
 
     try {
+      // Check API URL
+      if (!serverUrl) {
+        throw new Error(
+          "Server URL is missing. Please configure NEXT_PUBLIC_SERVER_URL in .env.local.",
+        );
+      }
+
       // Upload cover image to Cloudinary
       let imageUrl = "";
 
@@ -123,22 +134,48 @@ export default function CreateEventPage() {
           ? Number(formData.get("registrationLimit"))
           : null,
       };
-      const {data, error} = await authClient.token();
-      const token = data?.token;
+
+      // Get authentication token
+      const token = await getTokenFromClient();
+
+      if (!token) {
+        throw new Error("Authentication required. Please log in again.");
+      }
+
       // Send event data to Express server
-      const response = await fetch(`${process.env.SERVER_URL}/create-event`, {
+      const response = await fetch(`${serverUrl}/create-event`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(eventData),
       });
 
-      const result = await response.json();
+      // Read response only once
+      const contentType = response.headers.get("content-type") ?? "";
 
+      let result: Record<string, unknown>;
+
+      if (contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        const responseText = await response.text();
+
+        console.error("Non-JSON server response:", responseText);
+
+        throw new Error(
+          `Server returned an unexpected response (HTTP ${response.status}). Check your API URL and Express route.`,
+        );
+      }
+
+      // Handle API errors
       if (!response.ok) {
-        throw new Error(result.message || "Failed to create event.");
+        throw new Error(
+          typeof result.message === "string"
+            ? result.message
+            : "Failed to create event.",
+        );
       }
 
       console.log("Event created successfully:", result);
@@ -146,7 +183,7 @@ export default function CreateEventPage() {
       setSuccess("Your event has been created successfully!");
 
       // Reset form and image
-      e.currentTarget.reset();
+      form.reset();
       setCoverImage(null);
       setImagePreview(null);
     } catch (err) {
