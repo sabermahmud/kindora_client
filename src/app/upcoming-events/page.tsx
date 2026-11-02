@@ -1,3 +1,4 @@
+import EventDetails from "@/components/EventDetails";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -211,13 +212,8 @@ export default async function UpcomingEventsPage() {
                   </div>
 
                   {/* Action */}
-                  <Link
-                    href={`/events/${event._id}`}
-                    className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
-                  >
-                    Explore Event
-                    <span aria-hidden="true">→</span>
-                  </Link>
+
+                  <EventDetails event={event} />
                 </div>
               </article>
             ))}

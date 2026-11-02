@@ -118,7 +118,7 @@ export default function Banner() {
           {slides.map((slide, index) => (
             <CarouselItem key={slide.image} className="relative pl-0">
               {/* Responsive Banner Height */}
-              <div className="relative min-h-[520px] h-[72svh] max-h-[760px] w-full sm:min-h-[560px] md:h-[680px] lg:h-[720px]">
+              <div className="relative min-h-130 h-[72svh] max-h-190 w-full sm:min-h-140 md:h-170 lg:h-180">
                 {/* Background Image */}
                 <Image
                   src={slide.image}
@@ -131,7 +131,7 @@ export default function Banner() {
                 />
 
                 {/* Responsive Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/55 to-black/75 sm:bg-gradient-to-r sm:from-black/75 sm:via-black/55 sm:to-black/35" />
+                <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/55 to-black/75 sm:bg-linear-to-r sm:from-black/75 sm:via-black/55 sm:to-black/35" />
 
                 {/* Content */}
                 <div className="absolute inset-0 z-10 flex items-center justify-center px-5 py-16 sm:px-8 md:px-12 lg:px-16">
