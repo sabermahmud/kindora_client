@@ -1,8 +1,5 @@
-
 import EventDetails from "@/components/EventDetails";
-import { auth } from "@/lib/auth";
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
-import { headers } from "next/headers";
 import Image from "next/image";
 
 // Force dynamic rendering
@@ -21,14 +18,48 @@ interface Event {
   volunteerCapacity: number;
 }
 
+// Validate event data
+function isEvent(data: unknown): data is Event {
+  if (typeof data !== "object" || data === null) {
+    return false;
+  }
+
+  const event = data as Record<string, unknown>;
+
+  return (
+    typeof event._id === "string" &&
+    typeof event.title === "string" &&
+    typeof event.description === "string" &&
+    typeof event.category === "string" &&
+    typeof event.startDate === "string" &&
+    typeof event.volunteerCapacity === "number" &&
+    (event.coverImage === undefined || typeof event.coverImage === "string") &&
+    (event.city === undefined || typeof event.city === "string") &&
+    (event.venue === undefined || typeof event.venue === "string")
+  );
+}
+
+// Validate image URL
+function isValidImageUrl(url?: string): boolean {
+  if (!url) return false;
+
+  try {
+    const parsedUrl = new URL(url);
+
+    return parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 // Fetch upcoming events
-async function getUpcomingEvents(token: string): Promise<Event[]> {
+async function getUpcomingEvents(): Promise<Event[]> {
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   if (!serverUrl) {
-    throw new Error("SERVER_URL environment variable is missing");
+    throw new Error("NEXT_PUBLIC_SERVER_URL environment variable is missing");
   }
-
+const token = await getTokenFromServer()
   const res = await fetch(`${serverUrl}/upcoming-events`, {
     method: "GET",
     headers: {
@@ -38,31 +69,29 @@ async function getUpcomingEvents(token: string): Promise<Event[]> {
   });
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to fetch upcoming events. Status: ${res.status}`,
-    );
+    const errorData = await res.json().catch(() => null);
+
+    console.error("Upcoming events API error:", errorData);
+
+    throw new Error(`Failed to fetch upcoming events. Status: ${res.status}`);
   }
 
   const data: unknown = await res.json();
 
-  if (!Array.isArray(data)) {
+  if (!Array.isArray(data) || !data.every(isEvent)) {
     throw new Error("Invalid upcoming events API response");
   }
 
-  return data as Event[];
+  return data;
 }
 
+// Upcoming Events Page
 export default async function UpcomingEventsPage() {
-  // Get request headers
-  const token = await getTokenFromServer()
-
-  // Fetch events with JWT
-  const eventsData = await getUpcomingEvents(token);
+  const eventsData = await getUpcomingEvents();
 
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-
         {/* Header */}
         <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
@@ -98,11 +127,9 @@ export default async function UpcomingEventsPage() {
               >
                 {/* Cover Image */}
                 <div className="relative h-56 w-full overflow-hidden bg-slate-100">
-                  {event.coverImage &&
-                  typeof event.coverImage === "string" &&
-                  event.coverImage.startsWith("https://") ? (
+                  {isValidImageUrl(event.coverImage) ? (
                     <Image
-                      src={event.coverImage}
+                      src={event.coverImage!}
                       alt={event.title}
                       fill
                       className="object-cover transition duration-500 group-hover:scale-105"
@@ -131,7 +158,6 @@ export default async function UpcomingEventsPage() {
 
                   {/* Event Information */}
                   <div className="mt-5 space-y-3 border-t border-slate-100 pt-4">
-
                     {/* Event Date */}
                     <div className="flex items-center gap-3 text-sm text-slate-600">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
@@ -154,14 +180,16 @@ export default async function UpcomingEventsPage() {
                       <div>
                         <p className="text-xs text-slate-400">Event date</p>
                         <p className="font-medium text-slate-700">
-                          {new Date(event.startDate).toLocaleDateString(
-                            "en-US",
-                            {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            },
-                          )}
+                          {Number.isNaN(Date.parse(event.startDate))
+                            ? "Date unavailable"
+                            : new Date(event.startDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )}
                         </p>
                       </div>
                     </div>
@@ -228,8 +256,6 @@ export default async function UpcomingEventsPage() {
 
                   {/* Action */}
                   <EventDetails event={event} />
-                </div>
-                <div>
                 </div>
               </article>
             ))}
