@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import NavbarPage from "@/components/header/Navbar";
+import { AuthProvider } from "@/context/AuthProvider";
 
 const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
@@ -26,11 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${nunitoSans.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
+        <AuthProvider>
         <header>
           <NavbarPage/>
         </header>
         <main>{children}</main>
         <footer></footer>
+        </AuthProvider>
       </body>
     </html>
   );

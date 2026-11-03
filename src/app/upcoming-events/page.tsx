@@ -229,6 +229,8 @@ export default async function UpcomingEventsPage() {
                   {/* Action */}
                   <EventDetails event={event} />
                 </div>
+                <div>
+                </div>
               </article>
             ))}
           </div>

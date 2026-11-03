@@ -43,7 +43,7 @@ const userNavigation = [
     icon: CalendarDays,
   },
   {
-    href: "/joined-events",
+    href: "/join-event",
     label: "Joined Events",
     icon: Users,
   },
