@@ -10,17 +10,20 @@ import {
   Users,
   X,
   ChevronDown,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FiLogIn } from "react-icons/fi";
 
 import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { ThemeContext } from "@/context/ThemeProvider";
 
 const navigation = [
   { href: "/", label: "Home", icon: LayoutDashboard },
@@ -55,6 +58,9 @@ export default function Navbar() {
 
   const { data: session } = useSession();
 
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const isDark = theme === "dark";
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -66,11 +72,65 @@ export default function Navbar() {
   const userName =
     session?.user?.name ?? session?.user?.email?.split("@")[0] ?? "Account";
 
+  const colors = {
+    header: isDark
+      ? "border-gray-800 bg-gray-950/95"
+      : "border-[#E8F0E8] bg-[#FAF9F5]/95",
+
+    surface: isDark
+      ? "border-gray-800 bg-gray-900"
+      : "border-[#E8F0E8] bg-white",
+
+    text: isDark ? "text-gray-100" : "text-[#202B25]",
+
+    muted: isDark ? "text-gray-400" : "text-[#78847B]",
+
+    hover: isDark
+      ? "hover:bg-gray-800 hover:text-green-400"
+      : "hover:bg-[#F0F4EF] hover:text-[#245C45]",
+
+    active: isDark
+      ? "bg-green-950 text-green-400"
+      : "bg-[#E8F0E8] text-[#245C45]",
+
+    border: isDark ? "border-gray-800" : "border-[#E8F0E8]",
+  };
+
   // Close all menus
   const closeMenus = () => {
     setMobileMenuOpen(false);
     setDropdownOpen(false);
   };
+
+  // Theme Toggle
+  const ThemeToggle = ({ mobile = false }: { mobile?: boolean }) => (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+      title={`Switch to ${isDark ? "light" : "dark"} mode`}
+      className={cn(
+        "flex items-center justify-center gap-2 rounded-xl border transition-all duration-200",
+        colors.border,
+        colors.surface,
+        colors.text,
+        "hover:scale-105",
+        mobile ? "w-full px-4 py-3" : "h-10 w-10 rounded-full",
+      )}
+    >
+      {isDark ? (
+        <Sun className="h-5 w-5 text-yellow-400" />
+      ) : (
+        <Moon className="h-5 w-5 text-[#245C45]" />
+      )}
+
+      {mobile && (
+        <span className="text-sm font-semibold">
+          {isDark ? "Light Mode" : "Dark Mode"}
+        </span>
+      )}
+    </button>
+  );
 
   // Logout
   const handleLogout = async () => {
@@ -155,10 +215,8 @@ export default function Navbar() {
           "group flex items-center gap-3 rounded-xl font-semibold transition-all duration-200",
           mobile
             ? "px-4 py-3.5 text-sm"
-            : "gap-2 rounded-full px-3 xl:px-4 py-2.5 text-sm",
-          active
-            ? "bg-[#E8F0E8] text-[#245C45]"
-            : "text-[#202B25] hover:bg-[#F0F4EF] hover:text-[#245C45]",
+            : "gap-2 rounded-full px-3 py-2.5 text-sm xl:px-4",
+          active ? colors.active : cn(colors.text, colors.hover),
         )}
       >
         <item.icon
@@ -186,7 +244,8 @@ export default function Navbar() {
         height={44}
         className={cn(
           dimensions,
-          "shrink-0 rounded-full border border-[#E8F0E8] object-cover",
+          "shrink-0 rounded-full border object-cover",
+          colors.border,
         )}
       />
     ) : (
@@ -202,7 +261,12 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#E8F0E8] bg-[#FAF9F5]/95 shadow-sm backdrop-blur-xl">
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full border-b shadow-sm backdrop-blur-xl transition-colors duration-300",
+        colors.header,
+      )}
+    >
       {/* Main Navbar */}
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:px-5 md:h-[68px] md:px-6 lg:px-8">
         {/* Logo */}
@@ -222,10 +286,13 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Desktop Navigation - Large screens */}
+        {/* Desktop Navigation */}
         <nav
           aria-label="Main navigation"
-          className="hidden items-center gap-1 rounded-full border border-[#E8F0E8] bg-white p-1 shadow-sm lg:flex"
+          className={cn(
+            "hidden items-center gap-1 rounded-full border p-1 shadow-sm lg:flex",
+            colors.surface,
+          )}
         >
           {navigation.map((item) => (
             <NavLink key={item.href} item={item} />
@@ -233,7 +300,9 @@ export default function Navbar() {
         </nav>
 
         {/* Desktop Actions */}
-        <div className="hidden shrink-0 items-center lg:flex">
+        <div className="hidden shrink-0 items-center gap-3 lg:flex">
+          <ThemeToggle />
+
           {isAuthenticated ? (
             <div className="flex items-center gap-2 xl:gap-3">
               {/* Profile Dropdown */}
@@ -246,20 +315,26 @@ export default function Navbar() {
                   aria-label="Open account menu"
                   className={cn(
                     "flex max-w-[190px] items-center gap-2 rounded-full border p-1.5 pr-2.5 transition-all duration-200 xl:max-w-[220px] xl:pr-3",
-                    dropdownOpen
-                      ? "border-[#245C45] bg-[#E8F0E8]"
-                      : "border-[#E8F0E8] bg-white hover:border-[#245C45]/30 hover:bg-[#F0F4EF]",
+                    colors.border,
+                    colors.surface,
+                    dropdownOpen && colors.active,
                   )}
                 >
                   <UserAvatar size="small" />
 
-                  <span className="max-w-20 truncate text-sm font-semibold text-[#202B25] xl:max-w-28">
+                  <span
+                    className={cn(
+                      "max-w-20 truncate text-sm font-semibold xl:max-w-28",
+                      colors.text,
+                    )}
+                  >
                     {userName}
                   </span>
 
                   <ChevronDown
                     className={cn(
-                      "h-4 w-4 shrink-0 text-[#78847B] transition-transform duration-200",
+                      "h-4 w-4 shrink-0 transition-transform duration-200",
+                      colors.muted,
                       dropdownOpen && "rotate-180",
                     )}
                   />
@@ -269,15 +344,23 @@ export default function Navbar() {
                 {dropdownOpen && (
                   <div
                     role="menu"
-                    className="absolute right-0 top-full z-50 mt-3 w-[min(16rem,calc(100vw-1.5rem))] origin-top-right animate-in fade-in slide-in-from-top-2 rounded-2xl border border-[#E8F0E8] bg-white p-2 shadow-xl duration-200"
+                    className={cn(
+                      "absolute right-0 top-full z-50 mt-3 w-[min(16rem,calc(100vw-1.5rem))] origin-top-right animate-in fade-in slide-in-from-top-2 rounded-2xl border p-2 shadow-xl duration-200",
+                      colors.surface,
+                    )}
                   >
                     {/* User Information */}
-                    <div className="border-b border-[#E8F0E8] px-3 py-3">
-                      <p className="truncate text-sm font-bold text-[#202B25]">
+                    <div className={cn("border-b px-3 py-3", colors.border)}>
+                      <p
+                        className={cn(
+                          "truncate text-sm font-bold",
+                          colors.text,
+                        )}
+                      >
                         {userName}
                       </p>
 
-                      <p className="mt-1 truncate text-xs text-[#78847B]">
+                      <p className={cn("mt-1 truncate text-xs", colors.muted)}>
                         {session.user.email}
                       </p>
                     </div>
@@ -293,8 +376,8 @@ export default function Navbar() {
                           className={cn(
                             "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                             isActiveRoute(item.href)
-                              ? "bg-[#E8F0E8] text-[#245C45]"
-                              : "text-[#202B25] hover:bg-[#F0F4EF] hover:text-[#245C45]",
+                              ? colors.active
+                              : cn(colors.text, colors.hover),
                           )}
                         >
                           <item.icon className="h-4 w-4" />
@@ -306,22 +389,16 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Separate Logout Button */}
+              {/* Logout */}
               <Button
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="h-10 rounded-full bg-red-600 px-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 xl:px-5"
+                className="h-10 rounded-full bg-red-600 px-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-700 xl:px-5"
               >
-                <LogOut className="mr-1.5 h-4 w-4 xl:mr-2" />
+                <LogOut className="mr-1.5 h-4 w-4" />
 
-                <span className="hidden xl:inline">
-                  {isLoggingOut ? "Logging out..." : "Logout"}
-                </span>
-
-                <span className="xl:hidden">
-                  {isLoggingOut ? "..." : "Logout"}
-                </span>
+                {isLoggingOut ? "Logging out..." : "Logout"}
               </Button>
             </div>
           ) : (
@@ -329,14 +406,19 @@ export default function Navbar() {
               <Link href="/login">
                 <Button
                   variant="outline"
-                  className="h-10 rounded-full border-[#245C45]/30 px-4 text-[#245C45] transition-all hover:bg-[#E8F0E8] xl:px-5"
+                  className={cn(
+                    "h-10 rounded-full px-4 transition-all xl:px-5",
+                    isDark
+                      ? "border-gray-700 text-gray-200 hover:bg-gray-800"
+                      : "border-[#245C45]/30 text-[#245C45] hover:bg-[#E8F0E8]",
+                  )}
                 >
                   Login
                 </Button>
               </Link>
 
               <Link href="/signup">
-                <Button className="h-10 rounded-full bg-[#245C45] px-4 text-white shadow-sm transition-all hover:bg-[#194936] hover:shadow-md xl:px-5">
+                <Button className="h-10 rounded-full bg-[#245C45] px-4 text-white hover:bg-[#194936] xl:px-5">
                   Sign Up
                 </Button>
               </Link>
@@ -351,7 +433,11 @@ export default function Navbar() {
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[#245C45] transition-all hover:bg-[#E8F0E8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245C45] lg:hidden"
+          className={cn(
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245C45] lg:hidden",
+            colors.text,
+            colors.hover,
+          )}
         >
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
@@ -366,16 +452,27 @@ export default function Navbar() {
         id="mobile-navigation"
         aria-hidden={!mobileMenuOpen}
         className={cn(
-          "absolute left-0 right-0 top-full z-40 overflow-hidden border-b border-[#E8F0E8] bg-[#FAF9F5] shadow-xl transition-all duration-300 ease-in-out lg:hidden",
+          "absolute left-0 right-0 top-full z-40 overflow-hidden border-b shadow-xl transition-all duration-300 ease-in-out lg:hidden",
+          colors.header,
           mobileMenuOpen
             ? "visible max-h-[calc(100dvh-64px)] opacity-100 md:max-h-[calc(100dvh-68px)]"
             : "invisible max-h-0 opacity-0",
         )}
       >
         <div className="max-h-[calc(100dvh-64px)] overflow-y-auto overscroll-contain px-4 py-5 sm:px-6 md:max-h-[calc(100dvh-68px)]">
+          {/* Theme Toggle */}
+          <div className="mb-5">
+            <ThemeToggle mobile />
+          </div>
+
           {/* Main Navigation */}
           <div>
-            <p className="mb-3 px-4 text-[11px] font-bold uppercase tracking-[0.15em] text-[#78847B]">
+            <p
+              className={cn(
+                "mb-3 px-4 text-[11px] font-bold uppercase tracking-[0.15em]",
+                colors.muted,
+              )}
+            >
               Navigation
             </p>
 
@@ -388,24 +485,35 @@ export default function Navbar() {
 
           {/* Authenticated User */}
           {isAuthenticated ? (
-            <div className="mt-5 border-t border-[#E8F0E8] pt-5">
+            <div className={cn("mt-5 border-t pt-5", colors.border)}>
               {/* User Information */}
-              <div className="mb-5 flex items-center gap-3 rounded-2xl border border-[#E8F0E8] bg-white p-3">
+              <div
+                className={cn(
+                  "mb-5 flex items-center gap-3 rounded-2xl border p-3",
+                  colors.surface,
+                  colors.border,
+                )}
+              >
                 <UserAvatar />
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-[#202B25]">
+                  <p className={cn("truncate text-sm font-bold", colors.text)}>
                     {userName}
                   </p>
 
-                  <p className="mt-1 truncate text-xs text-[#78847B]">
+                  <p className={cn("mt-1 truncate text-xs", colors.muted)}>
                     {session.user.email}
                   </p>
                 </div>
               </div>
 
               {/* Account Navigation */}
-              <p className="mb-3 px-4 text-[11px] font-bold uppercase tracking-[0.15em] text-[#78847B]">
+              <p
+                className={cn(
+                  "mb-3 px-4 text-[11px] font-bold uppercase tracking-[0.15em]",
+                  colors.muted,
+                )}
+              >
                 My Account
               </p>
 
@@ -416,27 +524,36 @@ export default function Navbar() {
               </nav>
 
               {/* Mobile Logout */}
-              <div className="mt-5 border-t border-[#E8F0E8] pt-5">
+              <div className={cn("mt-5 border-t pt-5", colors.border)}>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="h-12 w-full rounded-xl border-red-200 font-semibold text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+                  className="h-12 w-full rounded-xl border-red-300 font-semibold text-red-600 hover:bg-red-50 hover:text-red-700"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-
                   {isLoggingOut ? "Logging out..." : "Logout"}
                 </Button>
               </div>
             </div>
           ) : (
             /* Guest Actions */
-            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#E8F0E8] pt-5">
+            <div
+              className={cn(
+                "mt-5 grid grid-cols-2 gap-3 border-t pt-5",
+                colors.border,
+              )}
+            >
               <Link href="/login" onClick={closeMenus} className="w-full">
                 <Button
                   variant="outline"
-                  className="h-12 w-full rounded-xl border-[#245C45]/30 font-semibold text-[#245C45] hover:bg-[#E8F0E8]"
+                  className={cn(
+                    "h-12 w-full rounded-xl font-semibold",
+                    isDark
+                      ? "border-gray-700 text-gray-200 hover:bg-gray-800"
+                      : "border-[#245C45]/30 text-[#245C45] hover:bg-[#E8F0E8]",
+                  )}
                 >
                   <FiLogIn className="mr-2 h-4 w-4" />
                   Login

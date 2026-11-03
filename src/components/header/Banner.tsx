@@ -25,7 +25,7 @@ type Slide = {
   button2Href: string;
 };
 
-const AUTO_PLAY_INTERVAL = 5000;
+const AUTO_PLAY_INTERVAL = 6000;
 
 const slides: Slide[] = [
   {
@@ -34,10 +34,10 @@ const slides: Slide[] = [
     heading: "Helping Each Other Can Make World Better",
     description:
       "Connect with passionate volunteers and create meaningful change in your community.",
-    buttonLabel: "Discover Now",
+    buttonLabel: "Explore Events",
     buttonHref: "/upcoming-events",
-    button2Label: "Watch Video",
-    button2Href: "/upcoming-events",
+    button2Label: "Create Event",
+    button2Href: "/create-event",
   },
   {
     image: "/banner_imgs/ban-2.jpeg",
@@ -45,10 +45,10 @@ const slides: Slide[] = [
     heading: "Join Hands With Local Organizations",
     description:
       "Join hands with local organizations driving real, measurable impact every day.",
-    buttonLabel: "Get Involved",
-    buttonHref: "/categories",
-    button2Label: "Watch Video",
-    button2Href: "/categories",
+    buttonLabel: "Explore Events",
+    buttonHref: "/upcoming-events",
+    button2Label: "Create Event",
+    button2Href: "/create-event",
   },
   {
     image: "/banner_imgs/banr-3.jpeg",
@@ -56,10 +56,10 @@ const slides: Slide[] = [
     heading: "Find Meaningful Ways to Contribute",
     description:
       "Find meaningful ways to contribute your time and skills near you.",
-    buttonLabel: "Start Volunteering",
-    buttonHref: "/",
-    button2Label: "Watch Video",
-    button2Href: "/",
+    buttonLabel: "Explore Events",
+    buttonHref: "/upcoming-events",
+    button2Label: "Create Event",
+    button2Href: "/create-event",
   },
 ];
 
@@ -138,11 +138,11 @@ export default function Banner() {
                   <div className="mx-auto w-full max-w-5xl text-center">
                     {/* Kicker */}
                     <div className="mb-4 inline-flex max-w-full items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#F59E0B] drop-shadow-md sm:mb-6 sm:gap-4 sm:text-xs md:text-sm">
-                      <span className="h-px w-6 shrink-0 bg-[#F59E0B]/60 sm:w-12" />
+                      <span className="h-px w-6 shrink-0 bg-[#245C45] sm:w-12" />
 
                       <span>{slide.kicker}</span>
 
-                      <span className="h-px w-6 shrink-0 bg-[#F59E0B]/60 sm:w-12" />
+                      <span className="h-px w-6 shrink-0 bg-[#245C45]/60 sm:w-12" />
                     </div>
 
                     {/* Heading */}
@@ -159,7 +159,7 @@ export default function Banner() {
                     <div className="mx-auto mt-7 flex w-full max-w-sm flex-col gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4">
                       <Link
                         href={slide.buttonHref}
-                        className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#F59E0B] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:bg-[#D97706] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F59E0B] focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:w-auto sm:px-8"
+                        className="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#245C45] px-6 py-3 text-sm font-bold text-white shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:bg-[#194936] hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F59E0B] focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:w-auto sm:px-8"
                       >
                         {slide.buttonLabel}
 
@@ -197,7 +197,7 @@ export default function Banner() {
             aria-current={selectedIndex === index ? "true" : undefined}
             className={cn(
               "h-1.5 w-6 rounded-full bg-white/50 transition-all duration-300 hover:bg-white/80 sm:h-2 sm:w-8",
-              selectedIndex === index && "w-9 bg-[#F59E0B] sm:w-12",
+              selectedIndex === index && "w-9 bg-[#245C45] sm:w-12",
             )}
           />
         ))}
