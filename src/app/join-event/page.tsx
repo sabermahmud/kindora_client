@@ -1,10 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ArrowLeft, CalendarDays, Clock, MapPin, Users } from "lucide-react";
-
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
-import { useAuth } from "@/context/AuthProvider";
 
 export interface JoinedEvent {
   _id: string;
@@ -66,7 +65,6 @@ async function getJoinedEvents(token: string): Promise<JoinedEvent[]> {
 }
 
 export default function JoinEventPage() {
-  const { joined } = useAuth();
   const [events, setEvents] = useState<JoinedEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +85,9 @@ export default function JoinEventPage() {
         }
       } catch (err) {
         if (mounted) {
-          setError(err instanceof Error ? err.message : "Failed to load events.");
+          setError(
+            err instanceof Error ? err.message : "Failed to load events.",
+          );
         }
       } finally {
         if (mounted) {
@@ -108,7 +108,9 @@ export default function JoinEventPage() {
       <main className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 rounded-full border-4 border-[#245C45]/30 border-t-[#245C45] animate-spin" />
-          <p className="text-sm text-slate-500">Loading your joined events...</p>
+          <p className="text-sm text-slate-500">
+            Loading your joined events...
+          </p>
         </div>
       </main>
     );
@@ -119,9 +121,7 @@ export default function JoinEventPage() {
       <main className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="max-w-md w-full text-center">
           <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
-            <p className="text-sm font-semibold text-slate-500 mb-6">
-              {error}
-            </p>
+            <p className="text-sm font-semibold text-slate-500 mb-6">{error}</p>
             <Link
               href="/upcoming-events"
               className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-emerald-700"
@@ -156,8 +156,8 @@ export default function JoinEventPage() {
                 No Joined Events Yet
               </h2>
               <p className="mt-2 max-w-md mx-auto text-sm leading-6 text-slate-500">
-                You haven&rsquo;t joined any events yet. Browse upcoming
-                events and join the ones that interest you.
+                You haven&rsquo;t joined any events yet. Browse upcoming events
+                and join the ones that interest you.
               </p>
               <Link
                 href="/upcoming-events"
@@ -191,7 +191,8 @@ export default function JoinEventPage() {
             My Joined Events
           </h1>
           <p className="mt-2 text-slate-500">
-            You&rsquo;re signed up for {events.length} event{"s".repeat(events.length === 1 ? 0 : 1)}.
+            You&rsquo;re signed up for {events.length} event
+            {"s".repeat(events.length === 1 ? 0 : 1)}.
           </p>
         </div>
 
@@ -203,10 +204,11 @@ export default function JoinEventPage() {
             >
               <div className="relative h-48 overflow-hidden rounded-2xl bg-slate-200 mb-4 group-hover:scale-[1.02] transition">
                 {event.coverImage ? (
-                  <img
+                  <Image
                     src={event.coverImage}
                     alt={event.title}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="h-full w-full flex items-center justify-center bg-slate-100 text-slate-400">
@@ -230,19 +232,21 @@ export default function JoinEventPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock size={14} className="text-emerald-500" />
-                  <span>{event.startTime} – {event.endTime}</span>
+                  <span>
+                    {event.startTime} – {event.endTime}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin size={14} className="text-emerald-500" />
-                  <span>{event.city || event.venue || "Location not specified"}</span>
+                  <span>
+                    {event.city || event.venue || "Location not specified"}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users size={14} className="text-emerald-500" />
                   <span>{event.volunteerCapacity} volunteers needed</span>
                 </div>
               </div>
-
-              
             </article>
           ))}
         </div>

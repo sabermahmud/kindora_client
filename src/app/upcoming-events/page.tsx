@@ -1,8 +1,7 @@
-import EventCategoryFilter from "@/components/EventCategoryFilter";
-import { getTokenFromServer } from "@/lib/getTokenFromServer";
-
 import Link from "next/link";
 import { IoMdAdd } from "react-icons/io";
+import EventCategoryFilter from "@/components/EventCategoryFilter";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 export const getUpcomingEvents = async () => {
   const token = await getTokenFromServer();

@@ -1,20 +1,15 @@
-
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+  FaArrowRight,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaTrash,
+  FaUsers,
+} from "react-icons/fa";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,16 +21,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  FaArrowRight,
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaUsers,
-  FaTrash,
-} from "react-icons/fa";
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-interface EventDataType {
+export interface EventDataType {
   _id: string;
   title: string;
   category: string;
@@ -53,6 +49,8 @@ interface EventDataType {
   volunteerCapacity: number;
   requiredSkills: string[];
   responsibilities: string;
+  createdBy: string;
+  created_by: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,27 +60,20 @@ interface ManageEventCardProps {
   onDelete?: (eventId: string) => Promise<void> | void;
 }
 
-export function ManageEventCard({
-  event,
-  onDelete,
-}: ManageEventCardProps) {
+export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const formattedDate = new Date(event.startDate).toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }
-  );
+  const formattedDate = new Date(event.startDate).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
 
       await onDelete?.(event._id);
-      
     } catch (error) {
       console.error("Failed to delete event:", error);
     } finally {
@@ -92,7 +83,6 @@ export function ManageEventCard({
 
   return (
     <Card className="group relative w-full overflow-hidden pt-0 transition-shadow duration-300 hover:shadow-lg">
-
       {/* Event Cover Image */}
       <div className="relative h-52 w-full overflow-hidden">
         <Image
@@ -116,9 +106,7 @@ export function ManageEventCard({
 
       {/* Event Information */}
       <CardHeader className="gap-3">
-        <CardTitle className="line-clamp-1 text-xl">
-          {event.title}
-        </CardTitle>
+        <CardTitle className="line-clamp-1 text-xl">{event.title}</CardTitle>
 
         <CardDescription className="line-clamp-3 min-h-[60px]">
           {event.description}
@@ -127,7 +115,6 @@ export function ManageEventCard({
 
       {/* Event Details */}
       <div className="space-y-3 px-6 text-sm text-muted-foreground">
-
         {/* Date */}
         <div className="flex items-center gap-3">
           <FaCalendarAlt className="shrink-0 text-[#245C45]" />
@@ -147,20 +134,18 @@ export function ManageEventCard({
         {/* Registration Capacity */}
         <div className="flex items-center gap-3">
           <FaUsers className="shrink-0 text-[#245C45]" />
-          <span>
-            Registration Limit: {event.registrationLimit}
-          </span>
+          <span>Registration Limit: {event.registrationLimit}</span>
         </div>
       </div>
 
       {/* Action Buttons */}
       <CardFooter className="mt-2 flex gap-3">
-
         {/* Update Button */}
-        <Button
-          className="group/button flex-1 bg-[#245C45] py-5 text-white hover:bg-[#194936]"
-        >
-          <Link href={`/manage-events/${event._id}/edit`} className="flex items-center gap-4">
+        <Button className="group/button flex-1 bg-[#245C45] py-5 text-white hover:bg-[#194936]">
+          <Link
+            href={`/manage-events/${event._id}/edit`}
+            className="flex items-center gap-4"
+          >
             Update
             <FaArrowRight className="h-4 w-4 transition-transform duration-800 group-hover/button:translate-x-10" />
           </Link>
@@ -168,7 +153,7 @@ export function ManageEventCard({
 
         {/* Delete Confirmation */}
         <AlertDialog>
-          <AlertDialogTrigger >
+          <AlertDialogTrigger>
             <Button
               variant="destructive"
               className="flex-1 py-5"
@@ -181,20 +166,16 @@ export function ManageEventCard({
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                Cancel this event?
-              </AlertDialogTitle>
+              <AlertDialogTitle>Cancel this event?</AlertDialogTitle>
 
               <AlertDialogDescription>
-                Are you sure you want to cancel "{event.title}"?
-                This action cannot be undone.
+                Are you sure you want to cancel "{event.title}"? This action
+                cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
             <AlertDialogFooter>
-              <AlertDialogCancel>
-                Keep Event
-              </AlertDialogCancel>
+              <AlertDialogCancel>Keep Event</AlertDialogCancel>
 
               <AlertDialogAction
                 onClick={handleDelete}
@@ -206,7 +187,6 @@ export function ManageEventCard({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
       </CardFooter>
     </Card>
   );

@@ -1,7 +1,4 @@
-
-export const uploadImageToCloudinary = async (
-  file: File
-): Promise<string> => {
+export const uploadImageToCloudinary = async (file: File): Promise<string> => {
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
@@ -19,7 +16,7 @@ export const uploadImageToCloudinary = async (
     {
       method: "POST",
       body: formData,
-    }
+    },
   );
 
   const data = await response.json();

@@ -1,6 +1,5 @@
-
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "./lib/auth";
 
 export async function proxy(request: NextRequest) {
@@ -11,10 +10,7 @@ export async function proxy(request: NextRequest) {
   if (!session) {
     const loginUrl = new URL("/login", request.url);
 
-    loginUrl.searchParams.set(
-      "callbackUrl",
-      request.nextUrl.pathname
-    );
+    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
 
     return NextResponse.redirect(loginUrl);
   }

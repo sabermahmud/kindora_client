@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
+import { ToastContainer } from "react-toastify";
 import NavbarPage from "@/components/header/Navbar";
 import { AuthProvider } from "@/context/AuthProvider";
 import { ThemeProvider } from "@/context/ThemeProvider";
- import { ToastContainer } from 'react-toastify';
 
 const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
@@ -34,7 +34,7 @@ export default function RootLayout({
             <header>
               <NavbarPage />
             </header>
-            <ToastContainer/>
+            <ToastContainer />
             <main>{children}</main>
             <footer></footer>
           </ThemeProvider>

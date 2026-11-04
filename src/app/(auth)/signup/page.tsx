@@ -1,25 +1,19 @@
-
 "use client";
 
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import {
-  type ChangeEvent,
-  type FormEvent,
-  useEffect,
-  useState,
-} from "react";
-import Link from "next/link";
 import {
   ArrowRight,
   Camera,
   Heart,
+  LoaderCircle,
   LockKeyhole,
   Mail,
-  UserRound,
-  LoaderCircle,
   ShieldCheck,
+  UserRound,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 
 import { signIn, signUp } from "@/lib/auth-client";
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
@@ -113,7 +107,7 @@ export default function SignupPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Something went wrong. Please try again."
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -143,10 +137,8 @@ export default function SignupPage() {
   return (
     <main className="min-h-screen bg-[#FAF9F5] px-4 py-10 sm:px-6 lg:py-16">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
-
         {/* Signup Form */}
         <section className="mx-auto w-full max-w-lg">
-
           {/* Heading */}
           <div className="mb-8 text-center lg:text-left">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#DCE8DC] bg-[#E8F0E8] px-4 py-2 text-xs font-bold tracking-wide text-[#245C45]">
@@ -155,21 +147,18 @@ export default function SignupPage() {
             </div>
 
             <h1 className="text-3xl font-extrabold tracking-tight text-[#202B25] sm:text-4xl lg:text-5xl">
-              Create your{" "}
-              <span className="text-[#245C45]">account.</span>
+              Create your <span className="text-[#245C45]">account.</span>
             </h1>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#78847B] sm:text-base lg:mx-0">
-              Be part of something meaningful. Start making a difference in
-              your community today.
+              Be part of something meaningful. Start making a difference in your
+              community today.
             </p>
           </div>
 
           {/* Form Card */}
           <div className="rounded-3xl border border-[#E8EDE7] bg-white p-5 shadow-[0_20px_60px_rgba(36,92,69,0.07)] sm:p-8">
-
             <form onSubmit={handleSignup} className="flex flex-col gap-5">
-
               {/* Profile Picture */}
               <div className="flex flex-col items-center gap-3 pb-3">
                 <label
@@ -187,9 +176,7 @@ export default function SignupPage() {
                   ) : (
                     <div className="flex flex-col items-center text-[#245C45]">
                       <Camera size={26} />
-                      <span className="mt-1 text-[10px] font-bold">
-                        UPLOAD
-                      </span>
+                      <span className="mt-1 text-[10px] font-bold">UPLOAD</span>
                     </div>
                   )}
 
@@ -220,7 +207,10 @@ export default function SignupPage() {
 
               {/* Name */}
               <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-semibold text-[#202B25]">
+                <label
+                  htmlFor="name"
+                  className="text-sm font-semibold text-[#202B25]"
+                >
                   Your Name
                 </label>
 
@@ -244,7 +234,10 @@ export default function SignupPage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-semibold text-[#202B25]">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-semibold text-[#202B25]"
+                >
                   Email Address
                 </label>
 
@@ -268,7 +261,10 @@ export default function SignupPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-semibold text-[#202B25]">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-semibold text-[#202B25]"
+                >
                   Create Password
                 </label>
 
@@ -371,14 +367,35 @@ export default function SignupPage() {
               {isGoogleLoading ? (
                 <LoaderCircle size={18} className="animate-spin" />
               ) : (
-                <svg viewBox="0 0 48 48" className="h-5 w-5">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.01 13.22l7.98 6.19C12.88 13.72 17.98 9.5 24 9.5Z" transform="translate(0 4)" />
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.19 5.59c4.2-3.88 6.57-9.59 6.57-17.24Z" />
-                  <path fill="#FBBC05" d="M10.99 28.59A14.4 14.4 0 0 1 10.22 24c0-1.59.27-3.12.77-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 3.01 10.78l7.98-6.19Z" transform="translate(1 0)" />
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.14 15.91-5.81l-7.19-5.59c-1.99 1.34-4.52 2.14-8.72 2.14-6.02 0-11.12-4.22-13.01-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z" />
+                <svg
+                  viewBox="0 0 48 48"
+                  className="h-5 w-5"
+                  aria-label="Google"
+                >
+                  <title>Google</title>
+                  <path
+                    fill="#EA4335"
+                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.01 13.22l7.98 6.19C12.88 13.72 17.98 9.5 24 9.5Z"
+                    transform="translate(0 4)"
+                  />
+                  <path
+                    fill="#4285F4"
+                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.72 7.18l7.19 5.59c4.2-3.88 6.57-9.59 6.57-17.24Z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M10.99 28.59A14.4 14.4 0 0 1 10.22 24c0-1.59.27-3.12.77-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.87.93 7.53 3.01 10.78l7.98-6.19Z"
+                    transform="translate(1 0)"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M24 48c6.48 0 11.93-2.14 15.91-5.81l-7.19-5.59c-1.99 1.34-4.52 2.14-8.72 2.14-6.02 0-11.12-4.22-13.01-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48Z"
+                  />
                 </svg>
               )}
-              {isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}
+              {isGoogleLoading
+                ? "Connecting to Google..."
+                : "Continue with Google"}
             </button>
 
             {/* Login */}
@@ -403,7 +420,6 @@ export default function SignupPage() {
         {/* Illustration */}
         <section className="relative hidden flex-col items-center lg:flex">
           <div className="relative w-full max-w-[520px]">
-
             <div className="absolute -right-5 -top-5 h-32 w-32 rounded-full bg-[#E8A45B]/15 blur-3xl" />
             <div className="absolute -bottom-5 -left-5 h-40 w-40 rounded-full bg-[#245C45]/10 blur-3xl" />
 
@@ -442,8 +458,8 @@ export default function SignupPage() {
             </h2>
 
             <p className="mt-4 text-base leading-7 text-[#78847B]">
-              Every small act of kindness can create meaningful change.
-              Connect, volunteer, and grow together with Kindora.
+              Every small act of kindness can create meaningful change. Connect,
+              volunteer, and grow together with Kindora.
             </p>
           </div>
         </section>

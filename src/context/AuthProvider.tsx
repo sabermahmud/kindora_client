@@ -3,7 +3,11 @@ import { createContext, useContext, useState } from "react";
 
 export interface AuthContextType {
   joined: Record<string, boolean>;
-  setJoined: (value: Record<string, boolean> | ((prev: Record<string, boolean>) => Record<string, boolean>)) => void;
+  setJoined: (
+    value:
+      | Record<string, boolean>
+      | ((prev: Record<string, boolean>) => Record<string, boolean>),
+  ) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({

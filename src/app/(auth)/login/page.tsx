@@ -1,19 +1,18 @@
-
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 import {
   ArrowRight,
-  Heart,
-  LockKeyhole,
-  Mail,
   Eye,
   EyeOff,
+  Heart,
   Loader2,
+  LockKeyhole,
+  Mail,
 } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { type FormEvent, useState } from "react";
 
 import { signIn } from "@/lib/auth-client";
 
@@ -48,9 +47,7 @@ export default function LogPage() {
       });
 
       if (loginError) {
-        throw new Error(
-          loginError.message || "Invalid email or password.",
-        );
+        throw new Error(loginError.message || "Invalid email or password.");
       }
 
       router.replace("/");
@@ -90,10 +87,8 @@ export default function LogPage() {
   return (
     <main className="min-h-screen bg-[#FAF9F5] px-4 py-10 sm:px-6 lg:py-16">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
-
         {/* Login Form */}
         <section className="mx-auto w-full max-w-lg">
-
           {/* Heading */}
           <div className="mb-8 text-center lg:text-left">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#DCE9DC] bg-[#E8F0E8] px-4 py-2 text-sm font-semibold text-[#245C45]">
@@ -102,23 +97,18 @@ export default function LogPage() {
             </div>
 
             <h1 className="text-3xl font-extrabold tracking-tight text-[#202B25] sm:text-4xl lg:text-5xl">
-              Welcome{" "}
-              <span className="text-[#245C45]">back!</span>
+              Welcome <span className="text-[#245C45]">back!</span>
             </h1>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#78847B] sm:text-base lg:mx-0">
-              Sign in to continue your journey of kindness.
-              Your community is waiting for you.
+              Sign in to continue your journey of kindness. Your community is
+              waiting for you.
             </p>
           </div>
 
           {/* Form Card */}
           <div className="rounded-3xl border border-[#E8EDE7] bg-white p-5 shadow-[0_15px_50px_rgba(36,92,69,0.07)] sm:p-8">
-
-            <form
-              onSubmit={handleLogin}
-              className="flex flex-col gap-5"
-            >
+            <form onSubmit={handleLogin} className="flex flex-col gap-5">
               {/* Email */}
               <div className="space-y-2">
                 <label
@@ -191,11 +181,7 @@ export default function LogPage() {
                     }
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-[#78847B] transition-colors hover:text-[#245C45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#245C45] disabled:cursor-not-allowed"
                   >
-                    {showPassword ? (
-                      <EyeOff size={18} />
-                    ) : (
-                      <Eye size={18} />
-                    )}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
@@ -303,7 +289,6 @@ export default function LogPage() {
         {/* Illustration */}
         <section className="relative hidden flex-col items-center lg:flex">
           <div className="relative w-full max-w-130">
-
             {/* Decorative Background */}
             <div className="absolute -right-5 -top-5 h-28 w-28 rounded-full bg-[#E8A45B]/15 blur-2xl" />
 

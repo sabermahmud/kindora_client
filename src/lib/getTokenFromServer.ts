@@ -1,11 +1,11 @@
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export const getTokenFromServer = async () => {
-const jwtToken = await auth.api.getToken({
+  const jwtToken = await auth.api.getToken({
     headers: await headers(),
-})
-const token = jwtToken?.token;
+  });
+  const token = jwtToken?.token;
 
-return token
-}
+  return token;
+};

@@ -1,6 +1,6 @@
 "use client";
 
-import { PlusCircle, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, PlusCircle } from "lucide-react";
 import { useContext, useState } from "react";
 
 import { AuthContext } from "@/context/AuthProvider";
@@ -46,7 +46,7 @@ export default function JoinBtn({ event, className }: JoinBtnProps) {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (res.status === 401) {
@@ -80,6 +80,7 @@ export default function JoinBtn({ event, className }: JoinBtnProps) {
   if (isAlreadyJoined) {
     return (
       <button
+        type="button"
         className={`mt-6 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-[#245C45]/30 bg-[#E8F0E8] px-4 py-2 text-sm font-semibold text-[#245C45] cursor-default ${className ?? ""}`}
         disabled
       >
@@ -91,10 +92,9 @@ export default function JoinBtn({ event, className }: JoinBtnProps) {
 
   return (
     <>
-      {error && (
-        <p className="text-sm text-red-600 mb-2">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-600 mb-2">{error}</p>}
       <button
+        type="button"
         className={`mt-6 w-full flex items-center justify-center gap-2 rounded-xl border-2 border-[#245C45]/30 px-4 py-2 text-sm font-semibold text-[#245C45] transition hover:bg-[#E8F0E8] ${className ?? ""}`}
         onClick={handleJoin}
         disabled={isLoading}

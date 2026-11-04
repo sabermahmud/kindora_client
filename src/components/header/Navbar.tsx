@@ -3,27 +3,27 @@
 import {
   Calendar,
   CalendarDays,
+  ChevronDown,
   LayoutDashboard,
   LogOut,
   Menu,
+  Moon,
   PlusCircle,
+  Sun,
   Users,
   X,
-  ChevronDown,
-  Sun,
-  Moon,
 } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FiLogIn } from "react-icons/fi";
 
 import { Button } from "@/components/ui/button";
+import { ThemeContext } from "@/context/ThemeProvider";
 import { signOut, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
-import { ThemeContext } from "@/context/ThemeProvider";
 
 const navigation = [
   { href: "/", label: "Home", icon: LayoutDashboard },
@@ -97,12 +97,16 @@ export default function Navbar() {
   };
 
   // Close all menus
-  const closeMenus = () => {
+  const closeMenus = useCallback(() => {
     setMobileMenuOpen(false);
     setDropdownOpen(false);
-  };
+  }, []);
 
-  // Theme Toggle
+  // Close menus on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setDropdownOpen(false);
+  }, [pathname]);
   const ThemeToggle = ({ mobile = false }: { mobile?: boolean }) => (
     <button
       type="button"
@@ -176,11 +180,6 @@ export default function Navbar() {
     };
   }, []);
 
-  // Close menus on route change
-  useEffect(() => {
-    closeMenus();
-  }, [pathname]);
-
   // Close menus with Escape
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -194,7 +193,7 @@ export default function Navbar() {
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, []);
+  }, [closeMenus]);
 
   // Navigation link
   const NavLink = ({

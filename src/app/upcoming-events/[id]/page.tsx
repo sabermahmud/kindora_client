@@ -1,29 +1,21 @@
-
-import { getTokenFromServer } from "@/lib/getTokenFromServer";
-import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
+import { notFound } from "next/navigation";
 import {
   FaArrowLeft,
   FaCalendarAlt,
-  FaClock,
-  FaMapMarkerAlt,
-  FaUsers,
-  FaUserFriends,
-  FaCheckCircle,
   FaCalendarCheck,
+  FaCheckCircle,
   FaGlobe,
+  FaMapMarkerAlt,
+  FaUserFriends,
+  FaUsers,
 } from "react-icons/fa";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getTokenFromServer } from "@/lib/getTokenFromServer";
 
 export interface EventDetailsPageProps {
   params: Promise<{
@@ -65,7 +57,7 @@ export const getUpcomingEvents = async (): Promise<EventDataType[]> => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }
+    },
   );
 
   if (!res.ok) {
@@ -110,7 +102,6 @@ export default async function EventDetailsPage({
   return (
     <main className="min-h-screen bg-muted/30">
       <div className="container mx-auto max-w-6xl px-4 py-8">
-
         {/* Back Navigation */}
         <Link
           href="/"
@@ -151,15 +142,11 @@ export default async function EventDetailsPage({
 
         {/* Main Content */}
         <div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
-
           {/* Left Content */}
           <div className="space-y-8 lg:col-span-2">
-
             {/* About Event */}
             <section>
-              <h2 className="mb-4 text-2xl font-bold">
-                About This Event
-              </h2>
+              <h2 className="mb-4 text-2xl font-bold">About This Event</h2>
 
               <p className="leading-8 text-muted-foreground">
                 {event.description}
@@ -180,9 +167,7 @@ export default async function EventDetailsPage({
                   <p className="mb-2 text-sm text-muted-foreground">
                     Start Date & Time
                   </p>
-                  <p className="font-semibold">
-                    {formatDate(event.startDate)}
-                  </p>
+                  <p className="font-semibold">{formatDate(event.startDate)}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {formatTime(event.startTime)}
                   </p>
@@ -192,9 +177,7 @@ export default async function EventDetailsPage({
                   <p className="mb-2 text-sm text-muted-foreground">
                     End Date & Time
                   </p>
-                  <p className="font-semibold">
-                    {formatDate(event.endDate)}
-                  </p>
+                  <p className="font-semibold">{formatDate(event.endDate)}</p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {formatTime(event.endTime)}
                   </p>
@@ -243,9 +226,7 @@ export default async function EventDetailsPage({
 
             {/* Required Skills */}
             <section>
-              <h2 className="mb-4 text-2xl font-bold">
-                Required Skills
-              </h2>
+              <h2 className="mb-4 text-2xl font-bold">Required Skills</h2>
 
               <div className="flex flex-wrap gap-2">
                 {event.requiredSkills.map((skill) => (
@@ -273,16 +254,13 @@ export default async function EventDetailsPage({
               </CardHeader>
 
               <CardContent className="space-y-5">
-
                 {/* Volunteer Capacity */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <FaUsers className="text-xl text-primary" />
                     <span className="text-sm">Volunteer Capacity</span>
                   </div>
-                  <span className="font-bold">
-                    {event.volunteerCapacity}
-                  </span>
+                  <span className="font-bold">{event.volunteerCapacity}</span>
                 </div>
 
                 {/* Registration Limit */}
@@ -291,9 +269,7 @@ export default async function EventDetailsPage({
                     <FaUserFriends className="text-xl text-primary" />
                     <span className="text-sm">Registration Limit</span>
                   </div>
-                  <span className="font-bold">
-                    {event.registrationLimit}
-                  </span>
+                  <span className="font-bold">{event.registrationLimit}</span>
                 </div>
 
                 {/* Registration Deadline */}
@@ -308,7 +284,7 @@ export default async function EventDetailsPage({
                 </div>
 
                 <div className="border-t pt-5">
-                  <Button  className="h-12 w-full text-base">
+                  <Button className="h-12 w-full text-base">
                     <Link href={`/events/${event._id}/join`}>
                       Join This Event
                     </Link>

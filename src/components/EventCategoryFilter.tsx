@@ -1,9 +1,7 @@
-
 "use client";
 
-import { EventCard } from "@/app/upcoming-events/EventCard";
 import { useState } from "react";
-
+import { EventCard } from "@/app/upcoming-events/EventCard";
 
 interface EventDataType {
   _id: string;
@@ -48,7 +46,7 @@ export default function EventCategoryFilter({
     activeCategory === "all"
       ? events
       : events.filter(
-          (event) => event.category.toLowerCase() === activeCategory
+          (event) => event.category.toLowerCase() === activeCategory,
         );
 
   const formatCategory = (category: string) => {
@@ -80,8 +78,7 @@ export default function EventCategoryFilter({
               {category === "all"
                 ? events.length
                 : events.filter(
-                    (event) =>
-                      event.category.toLowerCase() === category
+                    (event) => event.category.toLowerCase() === category,
                   ).length}
             </span>
           </button>
@@ -97,15 +94,14 @@ export default function EventCategoryFilter({
         </div>
       ) : (
         <div className="flex min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-          <h3 className="text-xl font-bold text-slate-800">
-            No Events Found
-          </h3>
+          <h3 className="text-xl font-bold text-slate-800">No Events Found</h3>
 
           <p className="mt-2 text-sm text-slate-500">
             No events are currently available in this category.
           </p>
 
           <button
+            type="button"
             onClick={() => setActiveCategory("all")}
             className="mt-5 rounded-lg bg-[#245C45] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#194936]"
           >

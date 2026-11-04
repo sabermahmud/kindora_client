@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, CalendarDays, ImagePlus, Info, Users } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useSession } from "@/lib/auth-client";
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
-import { useSession } from "@/lib/auth-client";
 
 export default function CreateEventPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -103,7 +103,7 @@ export default function CreateEventPage() {
 
       // Prepare event data
       const eventData = {
-        created_by:formData.get("created_by")?.toString().trim() ?? "",
+        created_by: formData.get("created_by")?.toString().trim() ?? "",
         title: formData.get("title")?.toString().trim() ?? "",
         category: formData.get("category")?.toString() ?? "",
         description: formData.get("description")?.toString().trim() ?? "",
@@ -587,12 +587,9 @@ export default function CreateEventPage() {
           )}
 
           {success && (
-            <div
-              role="status"
-              className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
-            >
+            <output className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
               {success}
-            </div>
+            </output>
           )}
 
           {/* Form Actions */}

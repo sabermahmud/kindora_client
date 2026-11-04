@@ -1,3 +1,12 @@
+import Image from "next/image";
+import Link from "next/link";
+import {
+  FaArrowRight,
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaUsers,
+} from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,17 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import Image from "next/image";
-import Link from "next/link";
-
-import {
-  FaArrowRight,
-  FaCalendarAlt,
-  FaClock,
-  FaMapMarkerAlt,
-  FaUsers,
-} from "react-icons/fa";
 
 interface EventDataType {
   _id: string;
@@ -166,17 +164,12 @@ export function EventCard({ event }: EventCardProps) {
 
       {/* Footer */}
       <CardFooter className="px-5 pb-5 pt-1">
-        
-          <Link
-            href={`/upcoming-events/${event._id}`}
-            className="w-full mt-4"
-          >
-            <Button className="group/btn h-11 w-full bg-[#245C45] font-semibold text-white transition-colors hover:bg-[#194936]">
+        <Link href={`/upcoming-events/${event._id}`} className="w-full mt-4">
+          <Button className="group/btn h-11 w-full bg-[#245C45] font-semibold text-white transition-colors hover:bg-[#194936]">
             View Details
             <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-            </Button>
-          </Link>
-        
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

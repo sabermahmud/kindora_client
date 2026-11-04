@@ -184,9 +184,9 @@ export default function Banner() {
       </Carousel>
 
       {/* Pagination */}
-      <div
-        className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 sm:bottom-8"
+      <nav
         aria-label="Banner navigation"
+        className="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 sm:bottom-8"
       >
         {slides.map((slide, index) => (
           <button
@@ -201,7 +201,7 @@ export default function Banner() {
             )}
           />
         ))}
-      </div>
+      </nav>
     </section>
   );
 }

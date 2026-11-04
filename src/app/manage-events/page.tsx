@@ -4,22 +4,19 @@ import { useEffect, useState } from "react";
 import { useSession } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import Spinner from "../Spinner";
-import { ManageEventCard } from "./ManageEventCard";
+import { type EventDataType, ManageEventCard } from "./ManageEventCard";
 
-interface Event {
-  created_by: string;
-  title: string;
-  _id: string;
-}
-
-export const getUpcomingEvents = async (): Promise<Event[]> => {
+export const getUpcomingEvents = async (): Promise<EventDataType[]> => {
   const token = await getTokenFromClient();
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/upcoming-events`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/upcoming-events`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (!res.ok) {
     throw new Error("Fetching upcoming events failed");
@@ -31,7 +28,7 @@ export const getUpcomingEvents = async (): Promise<Event[]> => {
 export default function ManagePage() {
   const { data: session, isPending } = useSession();
 
-  const [filteredData, setFilteredData] = useState<Event[]>([]);
+  const [filteredData, setFilteredData] = useState<EventDataType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const user = session?.user?.email;
@@ -74,8 +71,8 @@ export default function ManagePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 w-full mx-auto">
         {filteredData.length > 0 ? (
           filteredData.map((event) => (
-            <div key={event._id} >
-              <ManageEventCard event={event}/>
+            <div key={event._id}>
+              <ManageEventCard event={event} />
             </div>
           ))
         ) : (
