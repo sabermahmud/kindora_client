@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -7,9 +7,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import Image from "next/image";
-
+import { FaArrowRight } from "react-icons/fa";
 
 interface EventDataType {
   _id: string;
@@ -33,24 +33,32 @@ interface EventDataType {
   updatedAt: string;
 }
 
-export function EventCard({event}:EventDataType) {
+interface EventCardProps {
+  event: EventDataType;
+}
+
+export function EventCard({event}:EventCardProps) {
+  console.log(event)
   return (
     <Card className="relative w-full max-w-sm pt-0">
-      <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-      <Image src={event.coverImage} alt="coverImage" width={500} height={200}/>
+      <div className="absolute inset-0 z-30 bg-linear-to-b from-black/50  via-black/10 to-transparent hover:bg-transparent" />
+      <Image src={event.coverImage} alt="coverImage" width={500} height={200} className="w-full h-full object-cover" />
       <CardHeader>
         <CardAction>
           <Badge variant="secondary">{event.category}</Badge>
         </CardAction>
         <CardTitle>{event.title}</CardTitle>
-        <CardDescription className="line-clamp-4">{event.description}</CardDescription>
+        <CardDescription className="line-clamp-4">
+          {event.description}
+        </CardDescription>
       </CardHeader>
-      <div>
-
-      </div>
+      <div></div>
       <CardFooter>
-        <Button className="w-full bg-[#245C45] font-semibold text-white hover:bg-[#194936]">View Event</Button>
+        <Button className="group flex w-full items-center justify-center gap-2 bg-[#245C45] py-4 text-base font-medium text-white hover:bg-[#194936]">
+          View Details
+          <FaArrowRight className="h-4 w-4 transition-transform duration-800 group-hover:translate-x-10" />
+        </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { useSession } from "@/lib/auth-client";
 
 export default function CreateEventPage() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -21,6 +22,10 @@ export default function CreateEventPage() {
 
   // API URL
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
+  //created_by
+  const { data: session } = useSession();
+  const created_by = session?.user.email;
 
   // Cleanup image preview URL
   useEffect(() => {
@@ -98,6 +103,7 @@ export default function CreateEventPage() {
 
       // Prepare event data
       const eventData = {
+        created_by:formData.get("created_by")?.toString().trim() ?? "",
         title: formData.get("title")?.toString().trim() ?? "",
         category: formData.get("category")?.toString() ?? "",
         description: formData.get("description")?.toString().trim() ?? "",
@@ -245,6 +251,20 @@ export default function CreateEventPage() {
                   Tell the community about your initiative.
                 </p>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="created_by">Creator's Email *</Label>
+              <Input
+                id="created_by"
+                name="created_by"
+                placeholder={created_by}
+                required
+                disabled={isLoading}
+                className="h-11"
+                readOnly
+                value={created_by}
+              />
             </div>
 
             <div className="space-y-2">
