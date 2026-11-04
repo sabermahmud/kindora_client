@@ -15,7 +15,7 @@ interface Event {
 export const getUpcomingEvents = async (): Promise<Event[]> => {
   const token = await getTokenFromClient();
 
-  const res = await fetch("http://localhost:5000/upcoming-events", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/upcoming-events`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

@@ -1,19 +1,20 @@
-
-import { EventCard } from "@/app/upcoming-events/EventCard";
+import EventCategoryFilter from "@/components/EventCategoryFilter";
 import { getTokenFromServer } from "@/lib/getTokenFromServer";
+
 import Link from "next/link";
 import { IoMdAdd } from "react-icons/io";
-
-export interface UpComingPageProps {}
 
 export const getUpcomingEvents = async () => {
   const token = await getTokenFromServer();
 
-  const res = await fetch("http://localhost:5000/upcoming-events", {
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/upcoming-events`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (!res.ok) {
     throw new Error("Fetching upcoming events failed");
@@ -28,7 +29,6 @@ export default async function UpComingPage() {
   return (
     <main className="min-h-screen bg-slate-50/70">
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-
         {/* Header */}
         <section className="flex flex-col gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-8">
           <div className="space-y-2">
@@ -75,15 +75,11 @@ export default async function UpComingPage() {
             </span>
           </div>
 
-          {/* Event Grid */}
+          {/* Category Filter + Event Grid */}
           {upComingEventData.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {upComingEventData.map((event) => (
-                <EventCard key={event._id} event={event} />
-              ))}
-            </div>
+            <EventCategoryFilter events={upComingEventData} />
           ) : (
-            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+            <div className="flex min-h-75 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50">
                 <IoMdAdd className="text-3xl text-[#245C45]" />
               </div>
