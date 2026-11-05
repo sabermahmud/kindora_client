@@ -1,7 +1,9 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
+
+const THEME_STORAGE_KEY = "kindora-theme";
 
 interface ThemeContextType {
   theme: Theme;
@@ -17,6 +19,27 @@ export const ThemeContext = createContext<ThemeContextType>({
 
 export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("light");
+
+  // Apply the `dark` class to the <html> element and persist the theme whenever it changes
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
+
+  // Restore the persisted theme on mount (safe for SSR)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+      if (stored === "light" || stored === "dark") {
+        setTheme(stored);
+      }
+    }
+  }, []);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
