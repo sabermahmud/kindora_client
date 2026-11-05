@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -10,6 +11,7 @@ import {
   FaTrash,
   FaUsers,
 } from "react-icons/fa";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +23,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,19 +63,24 @@ interface ManageEventCardProps {
   onDelete?: (eventId: string) => Promise<void> | void;
 }
 
-export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
+export function ManageEventCard({
+  event,
+  onDelete,
+}: ManageEventCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const formattedDate = new Date(event.startDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const formattedDate = new Date(event.startDate).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }
+  );
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-
       await onDelete?.(event._id);
     } catch (error) {
       console.error("Failed to delete event:", error);
@@ -93,10 +101,8 @@ export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Image Overlay */}
         <div className="absolute inset-0 bg-linear-to-b from-black/50 via-transparent to-transparent" />
 
-        {/* Category Badge */}
         <div className="absolute right-4 top-4">
           <Badge variant="secondary" className="capitalize">
             {event.category}
@@ -106,7 +112,9 @@ export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
 
       {/* Event Information */}
       <CardHeader className="gap-3">
-        <CardTitle className="line-clamp-1 text-xl">{event.title}</CardTitle>
+        <CardTitle className="line-clamp-1 text-xl">
+          {event.title}
+        </CardTitle>
 
         <CardDescription className="line-clamp-3 min-h-[60px]">
           {event.description}
@@ -115,7 +123,6 @@ export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
 
       {/* Event Details */}
       <div className="space-y-3 px-6 text-sm text-muted-foreground">
-        {/* Date */}
         <div className="flex items-center gap-3">
           <FaCalendarAlt className="shrink-0 text-[#245C45]" />
           <span>
@@ -123,7 +130,6 @@ export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
           </span>
         </div>
 
-        {/* Location */}
         <div className="flex items-center gap-3">
           <FaMapMarkerAlt className="shrink-0 text-[#245C45]" />
           <span className="line-clamp-1">
@@ -131,51 +137,58 @@ export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
           </span>
         </div>
 
-        {/* Registration Capacity */}
         <div className="flex items-center gap-3">
           <FaUsers className="shrink-0 text-[#245C45]" />
-          <span>Registration Limit: {event.registrationLimit}</span>
+          <span>
+            Registration Limit: {event.registrationLimit}
+          </span>
         </div>
       </div>
 
       {/* Action Buttons */}
       <CardFooter className="mt-2 flex gap-3">
         {/* Update Button */}
-        <Button className="group/button flex-1 bg-[#245C45] py-5 text-white hover:bg-[#194936]">
-          <Link
-            href={`/manage-events/${event._id}/edit`}
-            className="flex items-center gap-4"
-          >
-            Update
-            <FaArrowRight className="h-4 w-4 transition-transform duration-800 group-hover/button:translate-x-10" />
-          </Link>
+        <Button
+          render={
+            <Link href={`/manage-events/${event._id}/edit`} />
+          }
+          className="group/button flex-1 bg-[#245C45] py-5 text-white hover:bg-[#194936]"
+        >
+          Update
+          <FaArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1" />
         </Button>
 
         {/* Delete Confirmation */}
         <AlertDialog>
-          <AlertDialogTrigger>
-            <Button
-              variant="destructive"
-              className="flex-1 py-5"
-              disabled={isDeleting}
-            >
-              <FaTrash className="h-4 w-4" />
-              Cancel
-            </Button>
+          <AlertDialogTrigger
+            render={
+              <Button
+                variant="destructive"
+                className="flex-1 py-5"
+                disabled={isDeleting}
+              />
+            }
+          >
+            <FaTrash className="h-4 w-4" />
+            Cancel
           </AlertDialogTrigger>
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Cancel this event?</AlertDialogTitle>
+              <AlertDialogTitle>
+                Cancel this event?
+              </AlertDialogTitle>
 
               <AlertDialogDescription>
-                Are you sure you want to cancel "{event.title}"? This action
-                cannot be undone.
+                Are you sure you want to cancel "{event.title}"?
+                This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
             <AlertDialogFooter>
-              <AlertDialogCancel>Keep Event</AlertDialogCancel>
+              <AlertDialogCancel>
+                Keep Event
+              </AlertDialogCancel>
 
               <AlertDialogAction
                 onClick={handleDelete}
