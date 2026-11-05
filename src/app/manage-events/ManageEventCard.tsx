@@ -75,7 +75,7 @@ export function ManageEventCard({
       year: "numeric",
       month: "short",
       day: "numeric",
-    }
+    },
   );
 
   const handleDelete = async () => {
@@ -149,9 +149,7 @@ export function ManageEventCard({
       <CardFooter className="mt-2 flex gap-3">
         {/* Update Button */}
         <Button
-          render={
-            <Link href={`/manage-events/${event._id}/edit`} />
-          }
+          render={<Link href={`/manage-events/${event._id}/edit`} />}
           className="group/button flex-1 bg-[#245C45] py-5 text-white hover:bg-[#194936]"
         >
           Update
@@ -163,6 +161,7 @@ export function ManageEventCard({
           <AlertDialogTrigger
             render={
               <Button
+                type="button"
                 variant="destructive"
                 className="flex-1 py-5"
                 disabled={isDeleting}
