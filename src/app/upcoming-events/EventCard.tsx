@@ -71,7 +71,7 @@ export function EventCard({ event }: EventCardProps) {
 
         <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-black/20" />
 
-        <Badge className="absolute left-4 top-4 border-0 bg-white/95 px-3 py-1 text-xs font-semibold capitalize text-[#245C45] shadow-sm hover:bg-white">
+        <Badge className="absolute left-4 top-4 border-0 bg-white/95 dark:bg-gray-950/95 px-3 py-1 text-xs font-semibold capitalize text-[#245C45] dark:text-green-400 shadow-sm hover:bg-white">
           {event.category}
         </Badge>
 
@@ -90,17 +90,17 @@ export function EventCard({ event }: EventCardProps) {
         {/* Event Information */}
         <div className="grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <FaCalendarAlt className="shrink-0 text-[#245C45]" />
+            <FaCalendarAlt className="shrink-0 text-[#245C45] dark:text-green-400" />
             <span className="truncate">{formattedDate}</span>
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <FaClock className="shrink-0 text-[#245C45]" />
+            <FaClock className="shrink-0 text-[#245C45] dark:text-green-400" />
             <span className="truncate">{formattedTime}</span>
           </div>
 
           <div className="col-span-2 flex items-center gap-2 text-sm text-muted-foreground">
-            <FaMapMarkerAlt className="shrink-0 text-[#245C45]" />
+            <FaMapMarkerAlt className="shrink-0 text-[#245C45] dark:text-green-400" />
             <span className="truncate">
               {event.venue || event.address}, {event.city}
             </span>
@@ -122,11 +122,11 @@ export function EventCard({ event }: EventCardProps) {
         <div className="space-y-2 rounded-lg bg-[#245C45]/5 p-3 dark:bg-[#245C45]/15">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <FaUsers className="text-[#245C45]" />
+              <FaUsers className="text-[#245C45] dark:text-green-400" />
               Volunteer Capacity
             </div>
 
-            <span className="text-sm font-bold text-[#245C45]">
+            <span className="text-sm font-bold text-[#245C45] dark:text-green-400">
               {event.volunteerCapacity}
             </span>
           </div>
@@ -165,7 +165,7 @@ export function EventCard({ event }: EventCardProps) {
       {/* Footer */}
       <CardFooter className="px-5 pb-5 pt-1">
         <Link href={`/upcoming-events/${event._id}`} className="w-full mt-4">
-          <Button className="group/btn h-11 w-full bg-[#245C45] font-semibold text-white transition-colors hover:bg-[#194936]">
+          <Button className="group/btn h-11 w-full bg-[#245C45] dark:bg-green-600 font-semibold text-white transition-colors hover:bg-[#194936] dark:hover:bg-green-700">
             View Details
             <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
           </Button>

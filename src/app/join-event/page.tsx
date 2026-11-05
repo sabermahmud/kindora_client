@@ -105,10 +105,10 @@ export default function JoinEventPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <main className="min-h-screen bg-slate-50 dark:bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 rounded-full border-4 border-[#245C45]/30 border-t-[#245C45] animate-spin" />
-          <p className="text-sm text-slate-500">
+          <div className="h-8 w-8 rounded-full border-4 border-[#245C45]/30 border-t-[#245C45] dark:border-green-500/30 dark:border-t-green-500 animate-spin" />
+          <p className="text-sm text-slate-500 dark:text-muted-foreground">
             Loading your joined events...
           </p>
         </div>
@@ -118,9 +118,9 @@ export default function JoinEventPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <main className="min-h-screen bg-slate-50 dark:bg-background flex items-center justify-center">
         <div className="max-w-md w-full text-center">
-          <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
+          <div className="rounded-3xl border border-slate-200 dark:border-border bg-white dark:bg-card p-10 shadow-sm">
             <p className="text-sm font-semibold text-slate-500 mb-6">{error}</p>
             <Link
               href="/upcoming-events"
@@ -174,12 +174,12 @@ export default function JoinEventPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-slate-50 dark:bg-background">
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center gap-2">
           <Link
             href="/upcoming-events"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-emerald-600"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-muted-foreground transition hover:text-emerald-600 dark:hover:text-emerald-400"
           >
             <ArrowLeft size={18} />
             Back to Events
@@ -187,10 +187,10 @@ export default function JoinEventPage() {
         </div>
 
         <div className="mb-6">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-foreground sm:text-4xl">
             My Joined Events
           </h1>
-          <p className="mt-2 text-slate-500">
+          <p className="mt-2 text-slate-500 dark:text-muted-foreground">
             You&rsquo;re signed up for {events.length} event
             {"s".repeat(events.length === 1 ? 0 : 1)}.
           </p>
@@ -200,9 +200,9 @@ export default function JoinEventPage() {
           {events.map((event) => (
             <article
               key={event._id}
-              className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition"
+              className="group rounded-3xl border border-slate-200 dark:border-border bg-white dark:bg-card p-6 shadow-sm hover:shadow-md transition"
             >
-              <div className="relative h-48 overflow-hidden rounded-2xl bg-slate-200 mb-4 group-hover:scale-[1.02] transition">
+              <div className="relative h-48 overflow-hidden rounded-2xl bg-slate-200 dark:bg-muted mb-4 group-hover:scale-[1.02] transition">
                 {event.coverImage ? (
                   <Image
                     src={event.coverImage}
@@ -211,39 +211,39 @@ export default function JoinEventPage() {
                     className="object-cover"
                   />
                 ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-slate-100 text-slate-400">
+                  <div className="h-full w-full flex items-center justify-center bg-slate-100 dark:bg-muted/50 text-slate-400 dark:text-muted-foreground">
                     <CalendarDays size={24} />
                   </div>
                 )}
               </div>
 
-              <span className="inline-block mb-2 rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-semibold text-emerald-600">
+              <span className="inline-block mb-2 rounded-full bg-emerald-50 dark:bg-emerald-900/20 px-3 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                 {event.category}
               </span>
 
-              <h3 className="mb-1 text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition">
+              <h3 className="mb-1 text-lg font-bold text-slate-900 dark:text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">
                 {event.title}
               </h3>
 
-              <div className="mt-3 space-y-2 text-sm text-slate-600">
+              <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <CalendarDays size={14} className="text-emerald-500" />
+                  <CalendarDays size={14} className="text-emerald-500 dark:text-emerald-400" />
                   <span>{formatDate(event.startDate)}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock size={14} className="text-emerald-500" />
+                  <Clock size={14} className="text-emerald-500 dark:text-emerald-400" />
                   <span>
                     {event.startTime} – {event.endTime}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MapPin size={14} className="text-emerald-500" />
+                  <MapPin size={14} className="text-emerald-500 dark:text-emerald-400" />
                   <span>
                     {event.city || event.venue || "Location not specified"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Users size={14} className="text-emerald-500" />
+                  <Users size={14} className="text-emerald-500 dark:text-emerald-400" />
                   <span>{event.volunteerCapacity} volunteers needed</span>
                 </div>
               </div>

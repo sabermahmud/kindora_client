@@ -135,35 +135,35 @@ export default function SignupPage() {
     "h-12 w-full rounded-xl border border-[#E2E9E1] bg-[#FAFBF9] pl-11 pr-4 text-sm text-[#202B25] outline-none transition-all duration-200 placeholder:text-[#A1AAA2] hover:border-[#B8CDBB] focus:border-[#245C45] focus:bg-white focus:ring-4 focus:ring-[#245C45]/10 disabled:opacity-60";
 
   return (
-    <main className="min-h-screen bg-[#FAF9F5] px-4 py-10 sm:px-6 lg:py-16">
+    <main className="min-h-screen bg-[#FAF9F5] dark:bg-background px-4 py-10 sm:px-6 lg:py-16">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-20">
         {/* Signup Form */}
         <section className="mx-auto w-full max-w-lg">
           {/* Heading */}
           <div className="mb-8 text-center lg:text-left">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#DCE8DC] bg-[#E8F0E8] px-4 py-2 text-xs font-bold tracking-wide text-[#245C45]">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#DCE8DC] dark:border-border bg-[#E8F0E8] dark:bg-muted px-4 py-2 text-xs font-bold tracking-wide text-[#245C45] dark:text-green-400">
               <Heart size={15} />
               JOIN THE KINDORA COMMUNITY
             </div>
 
-            <h1 className="text-3xl font-extrabold tracking-tight text-[#202B25] sm:text-4xl lg:text-5xl">
-              Create your <span className="text-[#245C45]">account.</span>
+            <h1 className="text-3xl font-extrabold tracking-tight text-[#202B25] dark:text-foreground sm:text-4xl lg:text-5xl">
+              Create your <span className="text-[#245C45] dark:text-green-400">account.</span>
             </h1>
 
-            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#78847B] sm:text-base lg:mx-0">
+            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[#78847B] dark:text-muted-foreground sm:text-base lg:mx-0">
               Be part of something meaningful. Start making a difference in your
               community today.
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="rounded-3xl border border-[#E8EDE7] bg-white p-5 shadow-[0_20px_60px_rgba(36,92,69,0.07)] sm:p-8">
+          <div className="rounded-3xl border border-[#E8EDE7] dark:border-border bg-white dark:bg-card p-5 shadow-[0_20px_60px_rgba(36,92,69,0.07)] sm:p-8">
             <form onSubmit={handleSignup} className="flex flex-col gap-5">
               {/* Profile Picture */}
               <div className="flex flex-col items-center gap-3 pb-3">
                 <label
                   htmlFor="image"
-                  className="group relative flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-[#B8CDBB] bg-[#E8F0E8] transition-all duration-300 hover:scale-105 hover:border-[#245C45] hover:shadow-lg"
+                  className="group relative flex h-24 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-[#B8CDBB] dark:border-border bg-[#E8F0E8] dark:bg-muted transition-all duration-300 hover:scale-105 hover:border-[#245C45] dark:hover:border-green-500 hover:shadow-lg"
                 >
                   {imagePreview ? (
                     <Image
@@ -174,13 +174,13 @@ export default function SignupPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex flex-col items-center text-[#245C45]">
+                    <div className="flex flex-col items-center text-[#245C45] dark:text-green-400">
                       <Camera size={26} />
-                      <span className="mt-1 text-[10px] font-bold">UPLOAD</span>
+                      <span className="mt-1 text-[10px] font-bold text-[#245C45] dark:text-green-400">UPLOAD</span>
                     </div>
                   )}
 
-                  <div className="absolute inset-0 flex items-center justify-center bg-[#245C45]/50 text-white opacity-0 transition group-hover:opacity-100">
+                  <div className="absolute inset-0 flex items-center justify-center bg-[#245C45]/50 dark:bg-green-500/50 text-white opacity-0 transition group-hover:opacity-100">
                     <Camera size={23} />
                   </div>
 

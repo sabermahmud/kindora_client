@@ -33,6 +33,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getTokenFromClient } from "@/lib/getTokenFromClient";
 
 export interface EventDataType {
   _id: string;
@@ -79,6 +80,13 @@ export function ManageEventCard({
   );
 
   const handleDelete = async () => {
+    const token = await getTokenFromClient()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/manage-events/:${event._id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },)
     try {
       setIsDeleting(true);
       await onDelete?.(event._id);
@@ -124,21 +132,21 @@ export function ManageEventCard({
       {/* Event Details */}
       <div className="space-y-3 px-6 text-sm text-muted-foreground">
         <div className="flex items-center gap-3">
-          <FaCalendarAlt className="shrink-0 text-[#245C45]" />
+          <FaCalendarAlt className="shrink-0 text-[#245C45] dark:text-green-400" />
           <span>
             {formattedDate} at {event.startTime}
           </span>
         </div>
 
         <div className="flex items-center gap-3">
-          <FaMapMarkerAlt className="shrink-0 text-[#245C45]" />
+          <FaMapMarkerAlt className="shrink-0 text-[#245C45] dark:text-green-400" />
           <span className="line-clamp-1">
             {event.venue}, {event.city}
           </span>
         </div>
 
         <div className="flex items-center gap-3">
-          <FaUsers className="shrink-0 text-[#245C45]" />
+          <FaUsers className="shrink-0 text-[#245C45] dark:text-green-400" />
           <span>
             Registration Limit: {event.registrationLimit}
           </span>
@@ -150,7 +158,7 @@ export function ManageEventCard({
         {/* Update Button */}
         <Button
           render={<Link href={`/manage-events/${event._id}/edit`} />}
-          className="group/button flex-1 bg-[#245C45] py-5 text-white hover:bg-[#194936]"
+          className="group/button flex-1 bg-[#245C45] dark:bg-green-600 py-5 text-white hover:bg-[#194936] dark:hover:bg-green-700"
         >
           Update
           <FaArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1" />
