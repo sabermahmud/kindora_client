@@ -1,11 +1,8 @@
-
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import {
-  FaArrowRight,
   FaCalendarAlt,
   FaMapMarkerAlt,
   FaTrash,
@@ -25,7 +22,6 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -34,6 +30,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
+import { useSession } from "@/lib/auth-client";
+import UpdateBtn from "@/components/UpdateBtn";
 
 export interface EventDataType {
   _id: string;
@@ -64,34 +62,57 @@ interface ManageEventCardProps {
   onDelete?: (eventId: string) => Promise<void> | void;
 }
 
-export function ManageEventCard({
-  event,
-  onDelete,
-}: ManageEventCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
+export function ManageEventCard({ event, onDelete }: ManageEventCardProps) {
+  const { data: session } = useSession();
 
-  const formattedDate = new Date(event.startDate).toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    },
-  );
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const formattedDate = new Date(event.startDate).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+
 
   const handleDelete = async () => {
-    const token = await getTokenFromClient()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/manage-events/:${event._id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },)
     try {
       setIsDeleting(true);
+
+      const token = await getTokenFromClient();
+      const email = session?.user?.email;
+
+      if (!token || !email) {
+        throw new Error("Please sign in again.");
+      }
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/manage-events/${event._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            created_by: email,
+          }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to delete event.");
+      }
+
       await onDelete?.(event._id);
+
+      // Close dialog after successful deletion
+      setIsDialogOpen(false);
     } catch (error) {
-      console.error("Failed to delete event:", error);
+      console.error("Delete Event Error:", error);
     } finally {
       setIsDeleting(false);
     }
@@ -120,11 +141,9 @@ export function ManageEventCard({
 
       {/* Event Information */}
       <CardHeader className="gap-3">
-        <CardTitle className="line-clamp-1 text-xl">
-          {event.title}
-        </CardTitle>
+        <CardTitle className="line-clamp-1 text-xl">{event.title}</CardTitle>
 
-        <CardDescription className="line-clamp-3 min-h-[60px]">
+        <CardDescription className="line-clamp-3 min-h-15">
           {event.description}
         </CardDescription>
       </CardHeader>
@@ -147,31 +166,22 @@ export function ManageEventCard({
 
         <div className="flex items-center gap-3">
           <FaUsers className="shrink-0 text-[#245C45] dark:text-green-400" />
-          <span>
-            Registration Limit: {event.registrationLimit}
-          </span>
+          <span>Registration Limit: {event.registrationLimit}</span>
         </div>
       </div>
 
       {/* Action Buttons */}
       <CardFooter className="mt-2 flex gap-3">
         {/* Update Button */}
-        <Button
-          render={<Link href={`/manage-events/${event._id}/edit`} />}
-          className="group/button flex-1 bg-[#245C45] dark:bg-green-600 py-5 text-white hover:bg-[#194936] dark:hover:bg-green-700"
-        >
-          Update
-          <FaArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/button:translate-x-1" />
-        </Button>
+        <UpdateBtn/>
 
         {/* Delete Confirmation */}
-        <AlertDialog>
+        <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <AlertDialogTrigger
             render={
-              <Button
+              <button
                 type="button"
-                variant="destructive"
-                className="flex-1 py-5"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-destructive py-5 text-sm font-medium text-white transition-colors hover:bg-destructive/90 disabled:pointer-events-none disabled:opacity-50"
                 disabled={isDeleting}
               />
             }
@@ -182,23 +192,24 @@ export function ManageEventCard({
 
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>
-                Cancel this event?
-              </AlertDialogTitle>
+              <AlertDialogTitle>Cancel this event?</AlertDialogTitle>
 
               <AlertDialogDescription>
-                Are you sure you want to cancel "{event.title}"?
-                This action cannot be undone.
+                Are you sure you want to cancel "{event.title}"? This action
+                cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
             <AlertDialogFooter>
-              <AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting}>
                 Keep Event
               </AlertDialogCancel>
 
               <AlertDialogAction
-                onClick={handleDelete}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete();
+                }}
                 disabled={isDeleting}
                 className="bg-destructive text-white hover:bg-destructive/90"
               >
@@ -211,3 +222,6 @@ export function ManageEventCard({
     </Card>
   );
 }
+
+
+

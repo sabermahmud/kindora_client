@@ -1,40 +1,41 @@
-
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { getTokenFromClient } from "@/lib/getTokenFromClient";
 import Spinner from "../Spinner";
-import {
-  type EventDataType,
-  ManageEventCard,
-} from "./ManageEventCard";
-import {
-  FaCalendarAlt,
-  FaPlus,
-  FaRegCalendarCheck,
-} from "react-icons/fa";
+import { type EventDataType, ManageEventCard } from "./ManageEventCard";
+import { FaCalendarAlt, FaPlus, FaRegCalendarCheck } from "react-icons/fa";
 
 export default function ManagePage() {
   const { data: session, isPending } = useSession();
 
+  const email = session?.user?.email;
+
   const [events, setEvents] = useState<EventDataType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   const getManageEventsData = useCallback(async () => {
-    if (!session?.user?.email) return;
+    if (!email) return;
 
     try {
       setLoading(true);
-      setError(false);
+      setError("");
 
       const token = await getTokenFromClient();
 
+      if (!token) {
+        throw new Error(
+          "Authentication token not found. Please sign in again.",
+        );
+      }
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/manage-events/${encodeURIComponent(session.user.email)}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/manage-events/${encodeURIComponent(email)}`,
         {
+          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -42,40 +43,94 @@ export default function ManagePage() {
         },
       );
 
-      if (!res.ok) {
-        throw new Error("Fetching manage events failed");
+      const responseText = await res.text();
+
+      let responseData: unknown;
+
+      try {
+        responseData = responseText ? JSON.parse(responseText) : null;
+      } catch {
+        responseData = responseText;
       }
 
-      const data: EventDataType[] = await res.json();
+      console.log("Manage Events API:", {
+        status: res.status,
+        ok: res.ok,
+        response: responseData,
+        hasToken: Boolean(token),
+      });
 
-      setEvents(data);
+      if (!res.ok) {
+        const message =
+          typeof responseData === "object" &&
+          responseData !== null &&
+          "message" in responseData &&
+          typeof responseData.message === "string"
+            ? responseData.message
+            : `Request failed with status ${res.status}`;
+
+        throw new Error(message);
+      }
+
+      if (!Array.isArray(responseData)) {
+        throw new Error("Invalid API response: Expected an events array.");
+      }
+
+      setEvents(responseData as EventDataType[]);
     } catch (err) {
       console.error("Manage events error:", err);
-      setError(true);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.email]);
+  }, [email]);
 
   useEffect(() => {
     if (isPending) return;
 
-    if (!session?.user?.email) {
+    if (!email) {
       setLoading(false);
       return;
     }
 
     getManageEventsData();
-  }, [session, isPending, getManageEventsData]);
+  }, [isPending, email, getManageEventsData]);
 
   if (isPending || loading) {
     return <Spinner />;
   }
 
+  if (!email) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#FAF9F5] px-4 dark:bg-background">
+        <div className="max-w-md rounded-2xl border border-[#E8E8DF] bg-white p-8 text-center shadow-sm dark:border-gray-700 dark:bg-card">
+          <h2 className="text-xl font-bold text-[#183D30] dark:text-green-200">
+            Authentication Required
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Please sign in to manage your events.
+          </p>
+
+          <Link
+            href="/login"
+            className="mt-6 inline-flex rounded-xl bg-[#245C45] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#194633] dark:bg-green-600 dark:hover:bg-green-700"
+          >
+            Sign In
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-[#FAF9F5] dark:bg-background">
       <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-
         {/* Header */}
         <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
           <div>
@@ -113,6 +168,7 @@ export default function ManagePage() {
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Your Events
               </p>
+
               <p className="mt-1 text-2xl font-bold text-[#183D30] dark:text-green-200">
                 {events.length}
               </p>
@@ -131,6 +187,7 @@ export default function ManagePage() {
               <h2 className="text-xl font-bold text-[#183D30] dark:text-green-200">
                 Your Events
               </h2>
+
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 All events created by you
               </p>
@@ -149,7 +206,7 @@ export default function ManagePage() {
               </p>
 
               <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                Something went wrong. Please try again.
+                {error}
               </p>
 
               <button
@@ -180,8 +237,8 @@ export default function ManagePage() {
               </h3>
 
               <p className="mt-2 max-w-sm text-sm leading-6 text-gray-500 dark:text-gray-400">
-                You haven't created any events yet. Start something
-                meaningful and bring your community together!
+                You haven't created any events yet. Start something meaningful
+                and bring your community together!
               </p>
 
               <Link

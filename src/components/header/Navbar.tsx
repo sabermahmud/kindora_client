@@ -267,7 +267,7 @@ export default function Navbar() {
       )}
     >
       {/* Main Navbar */}
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:px-5 md:h-[68px] md:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-3 sm:px-5 md:h-17 md:px-6 lg:px-8">
         {/* Logo */}
         <Link
           href="/"
@@ -313,7 +313,7 @@ export default function Navbar() {
                   aria-haspopup="menu"
                   aria-label="Open account menu"
                   className={cn(
-                    "flex max-w-[190px] items-center gap-2 rounded-full border p-1.5 pr-2.5 transition-all duration-200 xl:max-w-[220px] xl:pr-3",
+                    "flex max-w-47.5 items-center gap-2 rounded-full border p-1.5 pr-2.5 transition-all duration-200 xl:max-w-55 xl:pr-3",
                     colors.border,
                     colors.surface,
                     dropdownOpen && colors.active,

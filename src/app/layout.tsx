@@ -3,8 +3,8 @@ import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import NavbarPage from "@/components/header/Navbar";
-import { AuthProvider } from "@/context/AuthProvider";
 import { ThemeProvider } from "@/context/ThemeProvider";
+
 
 const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${nunitoSans.className} h-full antialiased`}>
       <body className="min-h-full flex flex-col max-w-7xl mx-auto">
-        <AuthProvider>
+     
           <ThemeProvider>
             <header>
               <NavbarPage />
@@ -38,7 +38,7 @@ export default function RootLayout({
             <main>{children}</main>
             <footer></footer>
           </ThemeProvider>
-        </AuthProvider>
+
       </body>
     </html>
   );

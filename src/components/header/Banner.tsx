@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, SquarePen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -170,7 +170,7 @@ export default function Banner() {
                         href={slide.button2Href}
                         className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:w-auto sm:px-8"
                       >
-                        <Play className="h-4 w-4 fill-current" />
+                        <SquarePen className="h-4 w-4 " />
 
                         {slide.button2Label}
                       </Link>
